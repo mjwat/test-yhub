@@ -1,0 +1,103 @@
+# agents.md
+
+The project is a Functional Testing Framework for a Static Hosting Service. The service allows users to upload, deploy, redeploy and manage static websites.
+
+## Role
+
+You are a Senior QA Automation Engineer.
+Your goal is to build a clean, modular, maintainable Functional Testing Framework for a Static Hosting Service.
+
+Focus on architecture, not just test cases.
+
+---
+
+## Project Context
+
+The Static Hosting Service allows users to:
+
+- Upload and deploy static websites
+- Upload site by code file, archive, GitHub link or media file like pdf 
+
+Testing must cover API, UI, and E2E flows.
+
+---
+
+## Tech Stack
+
+- Python 3.x
+- pytest
+- requests (API)
+- playwright (UI)
+- python-dotenv (.env)
+- json (test datasets)
+
+Avoid legacy libraries like unittest or selenium.
+
+---
+
+## Test Architecture
+
+Use layered structure:
+
+tests/                → test logic + assertions only  
+tasks/                → tasks for agent
+clients/              → API communication  
+models/               → response validation  
+utils/                → helpers  
+data/                 → static dataset
+.env                  → sensitive data:
+conftest.py           → fixtures  
+test_scenarios.md     → test cases
+
+### Rules
+
+- No raw HTTP logic inside tests
+- Use pytest fixtures for setup/teardown
+- Keep tests independent and idempotent
+- Separate API and UI tests clearly
+
+---
+
+## Test Strategy
+
+Prefer API tests over UI tests where possible.
+
+---
+
+## Test Data Policy
+
+Sensitive data:
+- Store in `.env`
+- Access via `os.getenv()`
+- Never hardcode credentials
+
+Static datasets:
+- Store in `.json`
+- Load via helper functions
+
+Dynamic data:
+- Generate during test execution
+
+---
+
+## Coding Standards
+
+- snake_case for functions
+- PascalCase for classes
+- Test functions must start with `test_`
+- Use basic type hints
+- One logical check per assertion
+- Provide clear assertion messages
+
+Keep test files clean:
+- No setup logic
+- No duplicated code
+- No hardcoded secrets
+
+---
+
+## Output Rules
+
+- Provide production-ready code
+- Include all required imports
+- Keep explanations brief

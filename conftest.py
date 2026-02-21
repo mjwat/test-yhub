@@ -45,7 +45,8 @@ def authenticated_session(auth_client: AuthClient, valid_login_payload: Dict[str
     csrf_response = auth_client.get_csrf_cookie()
     if csrf_response.status_code not in (200, 204):
         raise RuntimeError(
-            f"CSRF initialization failed. Status code: {csrf_response.status_code}. Body: {csrf_response.text}"
+            f"CSRF initialization failed. Status code: {csrf_response.status_code}. "
+            f"URL: {csrf_response.request.url}. Body: {csrf_response.text[:500]}"
         )
 
     xsrf_token = auth_client.get_xsrf_token()
@@ -60,7 +61,7 @@ def authenticated_session(auth_client: AuthClient, valid_login_payload: Dict[str
     if login_response.status_code not in (200, 204):
         raise RuntimeError(
             f"Login failed in authenticated_session fixture. Status code: {login_response.status_code}. "
-            f"Body: {login_response.text}"
+            f"URL: {login_response.request.url}. Body: {login_response.text[:500]}"
         )
 
     return auth_client

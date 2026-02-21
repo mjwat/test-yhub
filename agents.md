@@ -14,15 +14,21 @@ Focus on architecture, not just test cases.
 ## Project Context
 
 The Static Hosting Service allows users to:
-
 - Upload and deploy static websites
 - Upload site by code file, archive, GitHub link or media file like pdf 
+
+Backend stack: Laravel (Sanctum authentication).
+
+Important:
+- Authentication requires CSRF token retrieval via `/sanctum/csrf-cookie`
+- Login requires X-XSRF-TOKEN header and session cookies
+- Tests must use persistent session (requests.Session)
 
 Testing must cover API, UI, and E2E flows.
 
 ---
 
-## Tech Stack
+## Test Tech Stack
 
 - Python 3.x
 - pytest
@@ -61,6 +67,21 @@ test_scenarios.md     → test cases
 ## Test Strategy
 
 Prefer API tests over UI tests where possible.
+
+---
+
+## Test Scenarios Integrity Rule
+
+The file `test_scenarios.md` is the single source of truth for test coverage.
+
+STRICT RULES:
+- Agents MUST NOT modify, refactor, rewrite, reorder, or delete anything inside `test_scenarios.md`.
+- Agents MUST NOT reinterpret or simplify existing scenarios.
+- Agents MUST NOT change expected results or business logic described in this file.
+- Agents MAY ONLY implement automation code based on scenarios.
+- If a scenario appears incorrect or inconsistent, the agent must report it instead of modifying it.
+
+Violation of this rule is considered a critical error.
 
 ---
 

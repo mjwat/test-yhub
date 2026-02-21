@@ -10,15 +10,16 @@ Verify that a registered user can authenticate successfully via API.
 - Valid email and password are stored in .env
 
 ### Steps
-1. Send POST request to /auth/login with valid email and password.
-2. Verify response status code is 200.
-3. Verify access token is returned in response body.
-4. Verify token type is "Bearer" (if applicable).
+1. Send `GET /sanctum/csrf-cookie` to initialize CSRF/session cookies.
+2. Read `XSRF-TOKEN` cookie value.
+3. Send `POST /login` with valid email/password, session cookies, and `X-XSRF-TOKEN` header.
+4. Verify login response status code is 200 or 204.
+5. Verify authenticated session works on a protected endpoint (for example `GET /api/user`).
 
 ### Expected Result
 - Authentication succeeds.
-- Access token is issued.
-- Token can be used for authorized API requests.
+- Session cookies are issued and accepted.
+- Authenticated session can be used for authorized API requests.
 
 
 

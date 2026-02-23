@@ -13,13 +13,11 @@ class AuthClient:
         base_url: str,
         login_endpoint: str = "/login",
         csrf_endpoint: str = "/sanctum/csrf-cookie",
-        auth_check_endpoint: str = "/api/user",
         session: Optional[requests.Session] = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.login_endpoint = login_endpoint
         self.csrf_endpoint = csrf_endpoint
-        self.auth_check_endpoint = auth_check_endpoint
         self.session = session or requests.Session()
 
     def _build_url(self, path: str) -> str:
@@ -39,12 +37,25 @@ class AuthClient:
             return None
         return unquote(token)
 
-    def login(self, email: str, password: str, xsrf_token: str) -> requests.Response:
+    def get_csrf_token(self) -> str:
+        csrf_response = self.get_csrf_cookie()
+        if csrf_response.status_code not in (200, 204):
+            raise RuntimeError(
+                f"CSRF initialization failed. Status code: {csrf_response.status_code}. "
+                f"URL: {csrf_response.request.url}. Body: {csrf_response.text[:500]}"
+            )
+
+        token = self.get_xsrf_token()
+        if not token:
+            raise RuntimeError("XSRF-TOKEN cookie was not returned by /sanctum/csrf-cookie.")
+        return token
+
+    def login(self, email: str, password: str, token: str) -> requests.Response:
         login_url = self._build_url(self.login_endpoint)
         payload = {"email": email, "password": password}
         masked_payload = {"email": email, "password": "***"}
         headers = {
-            "X-XSRF-TOKEN": xsrf_token,
+            "X-XSRF-TOKEN": token,
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
@@ -56,14 +67,4 @@ class AuthClient:
             headers=headers,
         )
         logger.info("Login response: status=%s url=%s", response.status_code, login_url)
-        return response
-
-    def get_current_user(self) -> requests.Response:
-        user_url = self._build_url(self.auth_check_endpoint)
-        logger.info("Session auth check request: GET %s", user_url)
-        response = self.session.get(
-            url=user_url,
-            headers={"Accept": "application/json"},
-        )
-        logger.info("Session auth check response: status=%s url=%s", response.status_code, user_url)
         return response

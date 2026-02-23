@@ -28,40 +28,12 @@ def auth_client(api_base_url: str, env_config: Dict[str, str]) -> AuthClient:
         base_url=api_base_url,
         csrf_endpoint=env_config["CSRF_ENDPOINT"],
         login_endpoint=env_config["LOGIN_ENDPOINT"],
-        auth_check_endpoint=env_config["AUTH_CHECK_ENDPOINT"],
     )
 
 
 @pytest.fixture(scope="function")
-def valid_login_payload(env_config: Dict[str, str]) -> Dict[str, str]:
+def test_user(env_config: Dict[str, str]) -> Dict[str, str]:
     return {
         "email": env_config["TEST_USER_EMAIL"],
         "password": env_config["TEST_USER_PASSWORD"],
     }
-
-
-@pytest.fixture(scope="function")
-def authenticated_session(auth_client: AuthClient, valid_login_payload: Dict[str, str]) -> AuthClient:
-    csrf_response = auth_client.get_csrf_cookie()
-    if csrf_response.status_code not in (200, 204):
-        raise RuntimeError(
-            f"CSRF initialization failed. Status code: {csrf_response.status_code}. "
-            f"URL: {csrf_response.request.url}. Body: {csrf_response.text[:500]}"
-        )
-
-    xsrf_token = auth_client.get_xsrf_token()
-    if not xsrf_token:
-        raise RuntimeError("XSRF-TOKEN cookie was not returned by /sanctum/csrf-cookie.")
-
-    login_response = auth_client.login(
-        email=valid_login_payload["email"],
-        password=valid_login_payload["password"],
-        xsrf_token=xsrf_token,
-    )
-    if login_response.status_code not in (200, 204):
-        raise RuntimeError(
-            f"Login failed in authenticated_session fixture. Status code: {login_response.status_code}. "
-            f"URL: {login_response.request.url}. Body: {login_response.text[:500]}"
-        )
-
-    return auth_client

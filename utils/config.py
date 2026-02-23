@@ -23,6 +23,5 @@ def get_env_config() -> Dict[str, str]:
 
     config["CSRF_ENDPOINT"] = os.getenv("CSRF_ENDPOINT", "/sanctum/csrf-cookie").strip()
     config["LOGIN_ENDPOINT"] = os.getenv("LOGIN_ENDPOINT", "/login").strip()
-    config["AUTH_CHECK_ENDPOINT"] = os.getenv("AUTH_CHECK_ENDPOINT", "/api/user").strip()
 
     return config

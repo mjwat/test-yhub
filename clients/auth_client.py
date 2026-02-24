@@ -4,6 +4,8 @@ from urllib.parse import unquote
 
 import requests
 
+from utils.url import build_url
+
 logger = logging.getLogger(__name__)
 
 
@@ -11,8 +13,8 @@ class AuthClient:
     def __init__(
         self,
         base_url: str,
-        login_endpoint: str = "/login",
-        csrf_endpoint: str = "/sanctum/csrf-cookie",
+        login_endpoint: str,
+        csrf_endpoint: str,
         session: Optional[requests.Session] = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
@@ -20,12 +22,8 @@ class AuthClient:
         self.csrf_endpoint = csrf_endpoint
         self.session = session or requests.Session()
 
-    def _build_url(self, path: str) -> str:
-        normalized_path = path if path.startswith("/") else f"/{path}"
-        return f"{self.base_url}{normalized_path}"
-
     def get_csrf_cookie(self) -> requests.Response:
-        csrf_url = self._build_url(self.csrf_endpoint)
+        csrf_url = build_url(self.base_url, self.csrf_endpoint)
         logger.info("CSRF request: GET %s", csrf_url)
         response = self.session.get(url=csrf_url)
         logger.info("CSRF response: status=%s url=%s", response.status_code, csrf_url)
@@ -51,7 +49,7 @@ class AuthClient:
         return token
 
     def login(self, email: str, password: str, token: str) -> requests.Response:
-        login_url = self._build_url(self.login_endpoint)
+        login_url = build_url(self.base_url, self.login_endpoint)
         payload = {"email": email, "password": password}
         masked_payload = {"email": email, "password": "***"}
         headers = {

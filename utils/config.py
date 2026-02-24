@@ -17,11 +17,14 @@ def get_env_config() -> Dict[str, str]:
 
     config: Dict[str, str] = {
         "BASE_URL": _get_required_value("BASE_URL"),
-        "TEST_USER_EMAIL": _get_required_value("TEST_USER_EMAIL", "AUTH_USER_EMAIL"),
-        "TEST_USER_PASSWORD": _get_required_value("TEST_USER_PASSWORD", "AUTH_USER_PASSWORD"),
+        "ADMIN_BASE_URL": _get_required_value("ADMIN_BASE_URL"),
+        "TEST_USER_EMAIL": _get_required_value("TEST_USER_EMAIL"),
+        "TEST_USER_PASSWORD": _get_required_value("TEST_USER_PASSWORD"),
     }
 
     config["CSRF_ENDPOINT"] = os.getenv("CSRF_ENDPOINT", "/sanctum/csrf-cookie").strip()
     config["LOGIN_ENDPOINT"] = os.getenv("LOGIN_ENDPOINT", "/login").strip()
+    config["ADMIN_BASE_URL"] = config["ADMIN_BASE_URL"].rstrip("/")
+    config["SITE_CREATE_ENDPOINT"] = os.getenv("SITE_CREATE_ENDPOINT", "/site/create").strip()
 
     return config

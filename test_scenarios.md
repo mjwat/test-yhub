@@ -37,8 +37,7 @@ Verify that the site creation page is accessible to an authenticated user.
 
 ### Expected Result
 The request returns HTTP 200.
-The site creation page is rendered.
-No redirect to login page occurs.
+The right site creation page url is opened.
 
 
 ## YH-SC-002: Create site from single file

@@ -66,5 +66,5 @@ class AuthClient:
             json=payload,
             headers=headers,
         )
-        logger.info("Login response: status=%s url=%s", response.status_code, login_url)
+        logger.info("Login response: status=%s url=%s", response.status_code, response.url)
         return response

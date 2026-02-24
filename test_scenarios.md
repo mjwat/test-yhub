@@ -10,22 +10,38 @@ Verify that a registered user can authenticate successfully via API.
 - Valid email and password are stored in .env
 
 ### Steps
-1. Send `GET /sanctum/csrf-cookie` to initialize CSRF/session cookies.
-2. Read `XSRF-TOKEN` cookie value.
-3. Send `POST /login` with valid email/password, session cookies, and `X-XSRF-TOKEN` header.
-4. Verify login response status code is 200 or 204.
-5. Verify authenticated session works on a protected endpoint (for example `GET /api/user`).
+1. Get CSRF/session cookies.
+2. Login with valid email/password, session cookies, and `X-XSRF-TOKEN` header.
+3. Verify login response status code is 200 or 204.
 
 ### Expected Result
 - Authentication succeeds.
 - Session cookies are issued and accepted.
-- Authenticated session can be used for authorized API requests.
-
 
 
 # SC – Site Creation
 
-## YH-SC-001: Create site from single file
+## YH-SC-001: Site Creation Page is available for authenticated user
+
+### Goal
+Verify that the site creation page is accessible to an authenticated user.
+
+### Preconditions
+- User account exists.
+- Valid email and password are stored in .env.
+- User is successfully authenticated (valid session cookie is established).
+
+### Steps
+1. Open /site/create page.
+2. Verify response status code is 200.
+
+### Expected Result
+The request returns HTTP 200.
+The site creation page is rendered.
+No redirect to login page occurs.
+
+
+## YH-SC-002: Create site from single file
 
 ### Goal
 Verify that an authorized user can create a site by uploading a single file.

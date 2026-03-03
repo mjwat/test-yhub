@@ -3,6 +3,8 @@ from typing import Dict
 from clients.auth_client import AuthClient
 
 
+## YH-AU-001: Successful login with valid credentials
+
 def test_successful_login_with_valid_credentials(
     auth_client: AuthClient,
     test_user: Dict[str, str],

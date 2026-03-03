@@ -20,11 +20,13 @@ def get_env_config() -> Dict[str, str]:
         "ADMIN_BASE_URL": _get_required_value("ADMIN_BASE_URL"),
         "TEST_USER_EMAIL": _get_required_value("TEST_USER_EMAIL"),
         "TEST_USER_PASSWORD": _get_required_value("TEST_USER_PASSWORD"),
+        "GIT_REP_URL": _get_required_value("GIT_REP_URL"),
     }
 
     config["CSRF_ENDPOINT"] = os.getenv("CSRF_ENDPOINT", "/sanctum/csrf-cookie").strip()
     config["LOGIN_ENDPOINT"] = os.getenv("LOGIN_ENDPOINT", "/login").strip()
     config["ADMIN_BASE_URL"] = config["ADMIN_BASE_URL"].rstrip("/")
-    config["SITE_CREATE_ENDPOINT"] = os.getenv("SITE_CREATE_ENDPOINT", "/site/create").strip()
+    config["SITE_CREATE_PAGE_ENDPOINT"] = os.getenv("SITE_CREATE_PAGE_ENDPOINT", "/site/create").strip()
+    config["SITE_ENDPOINT"] = os.getenv("SITE_ENDPOINT", "/site").strip()
 
     return config

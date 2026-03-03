@@ -46,6 +46,11 @@ def test_user(env_config: Dict[str, str]) -> Dict[str, str]:
 
 
 @pytest.fixture(scope="function")
+def git_repo_url(env_config: Dict[str, str]) -> str:
+    return env_config["GIT_REP_URL"]
+
+
+@pytest.fixture(scope="function")
 def authenticated_auth_client(auth_client: AuthClient, test_user: Dict[str, str]) -> AuthClient:
     token = auth_client.get_csrf_token()
     response = auth_client.login(
@@ -69,6 +74,7 @@ def site_client(
 ) -> SiteClient:
     return SiteClient(
         base_url=admin_base_url,
-        site_create_endpoint=env_config["SITE_CREATE_ENDPOINT"],
+        site_create_page_endpoint=env_config["SITE_CREATE_PAGE_ENDPOINT"],
+        site_endpoint=env_config["SITE_ENDPOINT"],
         session=authenticated_auth_client.session,
     )

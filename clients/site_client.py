@@ -1,8 +1,10 @@
+import json
 import logging
-from typing import Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import unquote
 
 import requests
+from bs4 import BeautifulSoup
 
 from utils.url import build_url
 
@@ -47,3 +49,52 @@ class SiteClient:
         )
         logger.info("Site create (git) response: status=%s url=%s", response.status_code, response.url)
         return response
+
+    def get_user_sites(self) -> List[Dict[str, Any]]:
+        sites_url = build_url(self.base_url, self.site_endpoint)
+        logger.info("Site list request: GET %s", sites_url)
+        response = self.session.get(url=sites_url, allow_redirects=True)
+        logger.info("Site list response: status=%s url=%s", response.status_code, response.url)
+
+        if response.status_code != 200:
+            raise RuntimeError(
+                f"Expected status 200 from site list page, got {response.status_code}. "
+                f"URL: {response.url}. Body: {response.text[:500]}"
+            )
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        app_div = soup.find("div", id="app")
+        if app_div is None:
+            raise RuntimeError("Could not find div#app in site list HTML response.")
+
+        data_page = app_div.get("data-page")
+        if not data_page:
+            raise RuntimeError("div#app does not contain data-page attribute.")
+
+        try:
+            page_data = json.loads(data_page)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Failed to parse data-page attribute as JSON.") from exc
+
+        sites_data = page_data.get("props", {}).get("sites", {}).get("data", [])
+        if sites_data is None:
+            sites_data = []
+        if not isinstance(sites_data, list):
+            raise RuntimeError("Expected props.sites.data to be a list in data-page JSON.")
+
+        result: List[Dict[str, Any]] = []
+        for site in sites_data:
+            if not isinstance(site, dict):
+                raise RuntimeError("Each site record in props.sites.data must be an object.")
+
+            site_id = site.get("id")
+            full_link = site.get("full_link")
+            if site_id is None or full_link is None:
+                raise RuntimeError("Site record is missing required fields: id/full_link.")
+
+            result.append({
+                "id": site_id,
+                "full_link": full_link,
+            })
+
+        return result

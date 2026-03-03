@@ -66,3 +66,7 @@ class AuthClient:
         )
         logger.info("Login response: status=%s url=%s", response.status_code, response.url)
         return response
+
+    def authenticate(self, email: str, password: str) -> requests.Response:
+        token = self.get_csrf_token()
+        return self.login(email=email, password=password, token=token)

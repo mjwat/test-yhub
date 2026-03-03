@@ -52,11 +52,9 @@ def git_repo_url(env_config: Dict[str, str]) -> str:
 
 @pytest.fixture(scope="function")
 def authenticated_auth_client(auth_client: AuthClient, test_user: Dict[str, str]) -> AuthClient:
-    token = auth_client.get_csrf_token()
-    response = auth_client.login(
+    response = auth_client.authenticate(
         email=test_user["email"],
         password=test_user["password"],
-        token=token,
     )
     if response.status_code not in (200, 204):
         raise RuntimeError(

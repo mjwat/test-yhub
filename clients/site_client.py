@@ -39,6 +39,56 @@ class SiteClient(BaseApiClient):
         self.logger.info("Site create (git) response: status=%s url=%s", response.status_code, response.url)
         return response
 
+    def delete_site(self, site_id: Any) -> requests.Response:
+        delete_path = f"{self.site_endpoint}/{site_id}"
+        delete_url = self.build_url(delete_path)
+        headers = self.xsrf_json_headers()
+        self.logger.info("Site delete request: DELETE %s", delete_url)
+        response = self.request(
+            "DELETE",
+            delete_path,
+            headers=headers,
+            allow_redirects=False,
+        )
+        self.logger.info("Site delete response: status=%s url=%s", response.status_code, response.url)
+        return response
+
+    def delete_all_sites(self) -> Dict[str, Any]:
+        sites = self.get_user_sites()
+        summary: Dict[str, Any] = {
+            "total_found": len(sites),
+            "deleted_ids": [],
+            "failed": [],
+        }
+
+        for site in sites:
+            site_id = site.get("id")
+            try:
+                response = self.delete_site(site_id)
+            except Exception as exc:  # pragma: no cover - defensive utility path
+                summary["failed"].append(
+                    {
+                        "id": site_id,
+                        "error": str(exc),
+                    }
+                )
+                continue
+
+            if response.status_code in (200, 202, 204, 302):
+                summary["deleted_ids"].append(site_id)
+            else:
+                summary["failed"].append(
+                    {
+                        "id": site_id,
+                        "status_code": response.status_code,
+                        "location": response.headers.get("Location", ""),
+                    }
+                )
+
+        summary["deleted_count"] = len(summary["deleted_ids"])
+        summary["failed_count"] = len(summary["failed"])
+        return summary
+
     def get_user_sites(self) -> List[Dict[str, Any]]:
         sites_url = self.build_url(self.site_endpoint)
         self.logger.info("Site list request: GET %s", sites_url)

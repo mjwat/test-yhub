@@ -1,15 +1,11 @@
-import logging
 from typing import Optional
-from urllib.parse import unquote
 
 import requests
 
-from utils.url import build_url
-
-logger = logging.getLogger(__name__)
+from clients.base_api_client import BaseApiClient
 
 
-class AuthClient:
+class AuthClient(BaseApiClient):
     def __init__(
         self,
         base_url: str,
@@ -17,31 +13,21 @@ class AuthClient:
         csrf_endpoint: str,
         session: Optional[requests.Session] = None,
     ) -> None:
-        self.base_url = base_url.rstrip("/")
+        super().__init__(base_url=base_url, session=session)
         self.login_endpoint = login_endpoint
         self.csrf_endpoint = csrf_endpoint
-        self.session = session or requests.Session()
 
     def get_csrf_cookie(self) -> requests.Response:
-        csrf_url = build_url(self.base_url, self.csrf_endpoint)
-        logger.info("CSRF request: GET %s", csrf_url)
-        response = self.session.get(url=csrf_url)
-        logger.info("CSRF response: status=%s url=%s", response.status_code, csrf_url)
+        csrf_url = self.build_url(self.csrf_endpoint)
+        self.logger.info("CSRF request: GET %s", csrf_url)
+        response = self.get(self.csrf_endpoint)
+        self.logger.info("CSRF response: status=%s url=%s", response.status_code, csrf_url)
         return response
-
-    def get_xsrf_token(self) -> Optional[str]:
-        token = self.session.cookies.get("XSRF-TOKEN")
-        if token is None:
-            return None
-        return unquote(token)
 
     def get_csrf_token(self) -> str:
         csrf_response = self.get_csrf_cookie()
         if csrf_response.status_code not in (200, 204):
-            raise RuntimeError(
-                f"CSRF initialization failed. Status code: {csrf_response.status_code}. "
-                f"URL: {csrf_response.request.url}. Body: {csrf_response.text[:500]}"
-            )
+            raise RuntimeError(self.format_response_error("CSRF initialization failed.", csrf_response))
 
         token = self.get_xsrf_token()
         if not token:
@@ -49,22 +35,19 @@ class AuthClient:
         return token
 
     def login(self, email: str, password: str, token: str) -> requests.Response:
-        login_url = build_url(self.base_url, self.login_endpoint)
+        login_url = self.build_url(self.login_endpoint)
         payload = {"email": email, "password": password}
         masked_payload = {"email": email, "password": "***"}
-        headers = {
-            "X-XSRF-TOKEN": token,
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
+        headers = self.json_headers()
+        headers["X-XSRF-TOKEN"] = token
 
-        logger.info("Login request: POST %s payload=%s", login_url, masked_payload)
-        response = self.session.post(
-            url=login_url,
+        self.logger.info("Login request: POST %s payload=%s", login_url, masked_payload)
+        response = self.post(
+            self.login_endpoint,
             json=payload,
             headers=headers,
         )
-        logger.info("Login response: status=%s url=%s", response.status_code, response.url)
+        self.logger.info("Login response: status=%s url=%s", response.status_code, response.url)
         return response
 
     def authenticate(self, email: str, password: str) -> requests.Response:

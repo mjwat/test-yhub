@@ -43,31 +43,31 @@ Out of scope:
 ## Implementation checklist
 
 ### 1. Add Base API Client
-- [ ] Create `clients/base_api_client.py`.
-- [ ] Implement session ownership/injection.
-- [ ] Implement URL builder usage (reuse `utils/url.py`).
-- [ ] Implement generic request method with consistent logging.
-- [ ] Implement shared helpers for JSON headers and XSRF headers.
+- [x] Create `clients/base_api_client.py`.
+- [x] Implement session ownership/injection.
+- [x] Implement URL builder usage (reuse `utils/url.py`).
+- [x] Implement generic request method with consistent logging.
+- [x] Implement shared helpers for JSON headers and XSRF headers.
 
 ### 2. Migrate AuthClient
-- [ ] Refactor `clients/auth_client.py` to use `BaseApiClient`.
-- [ ] Keep public auth methods/signatures stable where possible.
-- [ ] Preserve masked credential logging behavior.
+- [x] Refactor `clients/auth_client.py` to use `BaseApiClient`.
+- [x] Keep public auth methods/signatures stable where possible.
+- [x] Preserve masked credential logging behavior.
 
 ### 3. Migrate SiteClient
-- [ ] Refactor `clients/site_client.py` to use `BaseApiClient`.
-- [ ] Keep site list parsing logic in `SiteClient` (domain-specific).
-- [ ] Preserve current endpoint usage and redirect behavior.
+- [x] Refactor `clients/site_client.py` to use `BaseApiClient`.
+- [x] Keep site list parsing logic in `SiteClient` (domain-specific).
+- [x] Preserve current endpoint usage and redirect behavior.
 
 ### 4. Fixture/script integration
-- [ ] Ensure `conftest.py` works with migrated clients without raw session logic.
-- [ ] Ensure `tasks/tmp_check_site_list.py` continues using shared clients only.
-- [ ] Remove any newly obsolete helper duplication introduced during migration.
+- [x] Ensure `conftest.py` works with migrated clients without raw session logic.
+- [x] Ensure `tasks/tmp_check_site_list.py` continues using shared clients only.
+- [x] Remove any newly obsolete helper duplication introduced during migration.
 
 ### 5. Validation
-- [ ] Validate syntax for all touched files.
-- [ ] Run targeted tests (`tests/api/test_auth_login.py`, `tests/api/test_site_creation.py`) where environment permits.
-- [ ] Update task checklist after implementation.
+- [x] Validate syntax for all touched files.
+- [ ] Run targeted tests (`tests/api/test_auth_login.py`, `tests/api/test_site_creation.py`) where environment permits. (blocked: DNS resolution failure for `yhub.net` in current environment)
+- [x] Update task checklist after implementation.
 
 ## Risks / edge cases
 - Over-centralization can hide endpoint-specific intent if base client grows too much.

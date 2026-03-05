@@ -24,6 +24,7 @@ def test_site_creation_page_available_for_authenticated_user(site_client: SiteCl
 def test_site_creation_by_git(
     site_client: SiteClient,
     git_repo_url: str,
+    # ensure_no_sites: None,
 ) -> None:
     response = site_client.create_site_from_git_url(git_repo_url)
 
@@ -40,4 +41,10 @@ def test_site_creation_by_git(
     assert expected_list_endpoint in actual_location, (
         "Expected redirect location to point to sites list page. "
         f"Expected endpoint: {site_client.site_endpoint}, Location: {location_header}"
+    )
+
+    sites_after_creation = site_client.get_user_sites()
+    assert len(sites_after_creation) == 1, (
+        f"Expected exactly 1 site after creation, got {len(sites_after_creation)}. "
+        f"Sites: {sites_after_creation}"
     )

@@ -76,3 +76,18 @@ def site_client(
         site_endpoint=env_config["SITE_ENDPOINT"],
         session=authenticated_auth_client.session,
     )
+
+
+@pytest.fixture(scope="function")
+def ensure_no_sites(site_client: SiteClient) -> None:
+    existing_sites = site_client.get_user_sites()
+    if existing_sites:
+        summary = site_client.delete_all_sites()
+        if summary["failed_count"] > 0:
+            raise RuntimeError(f"Site cleanup failed for some items: {summary}")
+
+    remaining_sites = site_client.get_user_sites()
+    if remaining_sites:
+        raise RuntimeError(
+            f"Site cleanup precondition failed. Expected zero sites before test, got: {remaining_sites}"
+        )

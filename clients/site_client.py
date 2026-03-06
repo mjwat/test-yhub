@@ -1,5 +1,6 @@
 import json
 from typing import Any, Dict, List, Optional
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +27,31 @@ class SiteClient(BaseApiClient):
         self.logger.info("Site creation page response: status=%s url=%s", response.status_code, response.url)
         return response
 
-    def create_site_from_git_url(self, git_repo_url: str) -> requests.Response:
+    def _extract_data_page(self, response: requests.Response) -> Dict[str, Any]:
+        soup = BeautifulSoup(response.text, "html.parser")
+        app_div = soup.find("div", id="app")
+        if app_div is None:
+            raise RuntimeError("Could not find div#app in HTML response.")
+
+        data_page = app_div.get("data-page")
+        if not data_page:
+            raise RuntimeError("div#app does not contain data-page attribute.")
+
+        try:
+            return json.loads(data_page)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Failed to parse data-page attribute as JSON.") from exc
+
+    def _extract_flash_message(self, response: requests.Response) -> str:
+        data_page = self._extract_data_page(response)
+        flash_message = data_page.get("props", {}).get("flash", {}).get("message")
+        if flash_message is None:
+            return ""
+        if not isinstance(flash_message, str):
+            raise RuntimeError("Expected props.flash.message to be a string when present.")
+        return flash_message
+
+    def create_site_from_git_url(self, git_repo_url: str) -> Dict[str, Any]:
         create_url = self.build_url(self.site_endpoint)
         headers = self.xsrf_json_headers()
         self.logger.info("Site create (git) request: POST %s git_repo_url=%s", create_url, git_repo_url)
@@ -37,7 +62,31 @@ class SiteClient(BaseApiClient):
             allow_redirects=False,
         )
         self.logger.info("Site create (git) response: status=%s url=%s", response.status_code, response.url)
-        return response
+
+        redirect_location = response.headers.get("Location", "")
+        redirect_url = urljoin(create_url, redirect_location)
+
+        redirect_response: Optional[requests.Response] = None
+        flash_message = ""
+        if redirect_location:
+            redirect_response = self.session.get(redirect_url, allow_redirects=True)
+            flash_message = self._extract_flash_message(redirect_response)
+            self.logger.info(
+                "Site create (git) redirect processed: redirect_status=%s final_url=%s flash_message=%s",
+                redirect_response.status_code,
+                redirect_response.url,
+                flash_message,
+            )
+        else:
+            self.logger.info("Site create (git) response has no redirect location header.")
+
+        return {
+            "initial_status_code": response.status_code,
+            "redirect_location": redirect_location,
+            "redirect_status_code": redirect_response.status_code if redirect_response is not None else None,
+            "flash_message": flash_message,
+            "final_url": redirect_response.url if redirect_response is not None else "",
+        }
 
     def delete_site(self, site_id: Any) -> requests.Response:
         delete_path = f"{self.site_endpoint}/{site_id}"
@@ -98,19 +147,7 @@ class SiteClient(BaseApiClient):
         if response.status_code != 200:
             raise RuntimeError(self.format_response_error("Expected status 200 from site list page.", response))
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        app_div = soup.find("div", id="app")
-        if app_div is None:
-            raise RuntimeError("Could not find div#app in site list HTML response.")
-
-        data_page = app_div.get("data-page")
-        if not data_page:
-            raise RuntimeError("div#app does not contain data-page attribute.")
-
-        try:
-            page_data = json.loads(data_page)
-        except json.JSONDecodeError as exc:
-            raise RuntimeError("Failed to parse data-page attribute as JSON.") from exc
+        page_data = self._extract_data_page(response)
 
         sites_data = page_data.get("props", {}).get("sites", {}).get("data", [])
         if sites_data is None:

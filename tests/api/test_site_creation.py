@@ -24,16 +24,16 @@ def test_site_creation_page_available_for_authenticated_user(site_client: SiteCl
 def test_site_creation_by_git(
     site_client: SiteClient,
     git_repo_url: str,
-    # ensure_no_sites: None,
+    ensure_no_sites: None,
 ) -> None:
-    response = site_client.create_site_from_git_url(git_repo_url)
+    create_result = site_client.create_site_from_git_url(git_repo_url)
 
-    assert response.status_code == 302, (
-        f"Expected create-by-git response status 302, got {response.status_code}. "
-        f"URL: {response.url}. Body: {response.text[:500]}"
+    assert create_result["initial_status_code"] == 302, (
+        f"Expected create-by-git response status 302, got {create_result['initial_status_code']}. "
+        f"Create result: {create_result}"
     )
 
-    location_header = response.headers.get("Location")
+    location_header = create_result["redirect_location"]
     assert location_header, "Expected redirect Location header in create-by-git response."
 
     expected_list_endpoint = site_client.site_endpoint.lower().rstrip("/")
@@ -41,6 +41,11 @@ def test_site_creation_by_git(
     assert expected_list_endpoint in actual_location, (
         "Expected redirect location to point to sites list page. "
         f"Expected endpoint: {site_client.site_endpoint}, Location: {location_header}"
+    )
+
+    assert create_result["flash_message"] == "Site created successfully, and files uploaded.", (
+        "Expected success flash message after create-by-git redirect. "
+        f"Got: {create_result['flash_message']}"
     )
 
     sites_after_creation = site_client.get_user_sites()

@@ -129,6 +129,7 @@ class SiteClient(BaseApiClient):
         }
 
     def delete_all_sites(self) -> Dict[str, Any]:
+        cleanup_pause_seconds = 20
         sites = self.get_user_sites()
         summary: Dict[str, Any] = {
             "total_found": len(sites),
@@ -168,8 +169,11 @@ class SiteClient(BaseApiClient):
         summary["deleted_count"] = len(summary["deleted_ids"])
         summary["failed_count"] = len(summary["failed"])
         if summary["deleted_count"] > 0 and summary["failed_count"] == 0:
-            self.logger.info("Deletion cleanup completed successfully. Waiting 20 seconds for backend stabilization.")
-            time.sleep(20)
+            self.logger.info(
+                "Deletion cleanup completed successfully. Waiting %s seconds for backend stabilization.",
+                cleanup_pause_seconds,
+            )
+            time.sleep(cleanup_pause_seconds)
         return summary
 
     def get_user_sites(self) -> List[Dict[str, Any]]:

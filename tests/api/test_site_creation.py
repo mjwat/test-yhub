@@ -3,7 +3,10 @@ from clients.site_client import SiteClient
 
 ## YH-SC-001: Site Creation Page is available for authenticated user
 
-def test_site_creation_page_available_for_authenticated_user(site_client: SiteClient) -> None:
+def test_site_creation_page_available_for_authenticated_user(
+    site_client: SiteClient,
+    ensure_no_sites: None,
+) -> None:
     response = site_client.get_site_creation_page()
 
     assert response.status_code == 200, (

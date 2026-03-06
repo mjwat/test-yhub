@@ -1,4 +1,5 @@
 import json
+import time
 from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
@@ -88,7 +89,7 @@ class SiteClient(BaseApiClient):
             "final_url": redirect_response.url if redirect_response is not None else "",
         }
 
-    def delete_site(self, site_id: Any) -> requests.Response:
+    def delete_site(self, site_id: Any) -> Dict[str, Any]:
         delete_path = f"{self.site_endpoint}/{site_id}"
         delete_url = self.build_url(delete_path)
         headers = self.xsrf_json_headers()
@@ -100,7 +101,32 @@ class SiteClient(BaseApiClient):
             allow_redirects=False,
         )
         self.logger.info("Site delete response: status=%s url=%s", response.status_code, response.url)
-        return response
+
+        redirect_location = response.headers.get("Location", "")
+        redirect_url = urljoin(delete_url, redirect_location)
+
+        redirect_response: Optional[requests.Response] = None
+        flash_message = ""
+        if redirect_location:
+            redirect_response = self.session.get(redirect_url, allow_redirects=True)
+            flash_message = self._extract_flash_message(redirect_response)
+            self.logger.info(
+                "Site delete redirect processed: redirect_status=%s final_url=%s flash_message=%s",
+                redirect_response.status_code,
+                redirect_response.url,
+                flash_message,
+            )
+        else:
+            self.logger.info("Site delete response has no redirect location header.")
+
+        return {
+            "site_id": site_id,
+            "initial_status_code": response.status_code,
+            "redirect_location": redirect_location,
+            "redirect_status_code": redirect_response.status_code if redirect_response is not None else None,
+            "flash_message": flash_message,
+            "final_url": redirect_response.url if redirect_response is not None else "",
+        }
 
     def delete_all_sites(self) -> Dict[str, Any]:
         sites = self.get_user_sites()
@@ -113,7 +139,7 @@ class SiteClient(BaseApiClient):
         for site in sites:
             site_id = site.get("id")
             try:
-                response = self.delete_site(site_id)
+                delete_result = self.delete_site(site_id)
             except Exception as exc:  # pragma: no cover - defensive utility path
                 summary["failed"].append(
                     {
@@ -123,19 +149,27 @@ class SiteClient(BaseApiClient):
                 )
                 continue
 
-            if response.status_code in (200, 202, 204, 302):
+            status_ok = delete_result.get("initial_status_code") == 302
+            flash_ok = delete_result.get("flash_message") == "Site deleted successfully"
+            if status_ok and flash_ok:
                 summary["deleted_ids"].append(site_id)
             else:
                 summary["failed"].append(
                     {
                         "id": site_id,
-                        "status_code": response.status_code,
-                        "location": response.headers.get("Location", ""),
+                        "initial_status_code": delete_result.get("initial_status_code"),
+                        "redirect_location": delete_result.get("redirect_location", ""),
+                        "redirect_status_code": delete_result.get("redirect_status_code"),
+                        "flash_message": delete_result.get("flash_message", ""),
+                        "final_url": delete_result.get("final_url", ""),
                     }
                 )
 
         summary["deleted_count"] = len(summary["deleted_ids"])
         summary["failed_count"] = len(summary["failed"])
+        if summary["deleted_count"] > 0 and summary["failed_count"] == 0:
+            self.logger.info("Deletion cleanup completed successfully. Waiting 20 seconds for backend stabilization.")
+            time.sleep(20)
         return summary
 
     def get_user_sites(self) -> List[Dict[str, Any]]:

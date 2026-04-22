@@ -115,6 +115,16 @@ Keep test files clean:
 - No duplicated code
 - No hardcoded secrets
 
+## Coding Standards for UI Tests
+- **Pattern:** Use the Page Object Model (POM) for all Playwright tests.
+- **Organization:** Separate test logic (actions/assertions) from page structure (locators). 
+- **Locators:** 
+- Store locators as class attributes in page classes located in `tests/e2e/pages/`.
+- Prefer user-facing locators (`get_by_role`, `get_by_label`, `get_by_text`) with `re.compile(..., re.IGNORECASE)` for resilience.
+- **Structure:** 
+- Each page class should have a `__init__` method receiving the `page` object.
+- Actions (like `login`, `search`, etc.) should be encapsulated in page class methods.
+
 ---
 
 ## Output Rules

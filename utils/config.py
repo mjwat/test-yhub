@@ -25,6 +25,8 @@ def get_env_config() -> Dict[str, str]:
 
     config["CSRF_ENDPOINT"] = os.getenv("CSRF_ENDPOINT", "/sanctum/csrf-cookie").strip()
     config["LOGIN_ENDPOINT"] = os.getenv("LOGIN_ENDPOINT", "/login").strip()
+    config["LOGIN_PATH"] = os.getenv("LOGIN_PATH", "/login").strip()
+    config["DASHBOARD_PATH"] = os.getenv("DASHBOARD_PATH", "/dashboard").strip()
     config["ADMIN_BASE_URL"] = config["ADMIN_BASE_URL"].rstrip("/")
     config["SITE_CREATE_PAGE_ENDPOINT"] = os.getenv("SITE_CREATE_PAGE_ENDPOINT", "/site/create").strip()
     config["SITE_ENDPOINT"] = os.getenv("SITE_ENDPOINT", "/site").strip()

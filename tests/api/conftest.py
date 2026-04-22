@@ -1,26 +1,14 @@
-import logging
 from typing import Dict
 
 import pytest
 
 from clients.auth_client import AuthClient
 from clients.site_client import SiteClient
-from utils.config import get_env_config
-
-
-@pytest.fixture(scope="session", autouse=True)
-def configure_logging() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s - %(message)s")
 
 
 @pytest.fixture(scope="session")
-def env_config() -> Dict[str, str]:
-    return get_env_config()
-
-
-@pytest.fixture(scope="session")
-def api_base_url(env_config: Dict[str, str]) -> str:
-    return env_config["BASE_URL"].rstrip("/")
+def api_base_url(base_url: str) -> str:
+    return base_url
 
 
 @pytest.fixture(scope="session")

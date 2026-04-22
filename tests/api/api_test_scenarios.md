@@ -1,6 +1,6 @@
-# AU – Authorization
+# AU – Authorization via API
 
-## YH-AU-001: Successful login with valid credentials
+## YH-API-AU-001: Successful login with valid credentials
 
 ### Goal
 Verify that a registered user can authenticate successfully via API.
@@ -16,15 +16,16 @@ Verify that a registered user can authenticate successfully via API.
 1. Get CSRF/session cookies.
 2. Login with valid email/password, session cookies, and `X-XSRF-TOKEN` header.
 3. Verify login response status code is 200 or 204.
+4. Verify admin url in response.
 
 ### Expected Result
 - Authentication succeeds.
 - Session cookies are issued and accepted.
 
 
-# SC – Site Creation
+# SC – Site Creation via API
 
-## YH-SC-001: Site Creation Page is available for authenticated user
+## YH-API-SC-001: Site Creation Page is available for authenticated user
 
 ### Goal
 Verify that the Site Creatin page is accessible to an authenticated user.
@@ -43,7 +44,7 @@ The request returns HTTP 200.
 The right site creation page url is opened.
 
 
-## YH-SC-002: Create site from Git repository URL
+## YH-API-SC-002: Create site from Git repository URL
 
 ### Goal
 Verify that an authorized user can create a site by providing a valid Git repository URL.
@@ -75,7 +76,7 @@ Verify that an authorized user can create a site by providing a valid Git reposi
 - Test must correctly handle asynchronous status updates while the site is being built/deployed.
 
 
-## YH-SC-003: Create site from single HTML file
+## YH-API-SC-003: Create site from single HTML file
 
 ### Goal
 Verify that an authorized user can create a site by uploading a single file.

@@ -1,7 +1,8 @@
 from clients.site_client import SiteClient
+from utils.url import url_contains_expected
 
 
-## YH-SC-001: Site Creation Page is available for authenticated user
+## YH-API-SC-001: Site Creation Page is available for authenticated user
 
 def test_site_creation_page_available_for_authenticated_user(
     site_client: SiteClient,
@@ -14,15 +15,13 @@ def test_site_creation_page_available_for_authenticated_user(
         f"Final URL: {response.url}. Body: {response.text[:500]}"
     )
 
-    expected_endpoint = site_client.site_create_page_endpoint.lower().rstrip("/")
-    final_url = response.url.lower().rstrip("/")
-    assert expected_endpoint in final_url, (
+    assert url_contains_expected(response.url, site_client.site_create_page_endpoint), (
         "Expected final URL to point to the site creation page, "
         f"expected endpoint: {site_client.site_create_page_endpoint}, final URL: {response.url}"
     )
 
 
-# YH-SC-002: Create site from Git repository URL
+# YH-API-SC-002: Create site from Git repository URL
 
 def test_site_creation_by_git(
     site_client: SiteClient,
@@ -39,9 +38,7 @@ def test_site_creation_by_git(
     location_header = create_result["redirect_location"]
     assert location_header, "Expected redirect Location header in create-by-git response."
 
-    expected_list_endpoint = site_client.site_endpoint.lower().rstrip("/")
-    actual_location = location_header.lower().rstrip("/")
-    assert expected_list_endpoint in actual_location, (
+    assert url_contains_expected(location_header, site_client.site_endpoint), (
         "Expected redirect location to point to sites list page. "
         f"Expected endpoint: {site_client.site_endpoint}, Location: {location_header}"
     )

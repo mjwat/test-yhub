@@ -11,13 +11,13 @@ from tests.e2e.pages.login_page import LoginPage
 
 def test_successful_login (
     page: Page,
-    ui_user: Dict[str, str],
+    user_credentials: Dict[str, str],
     login_path: str,
     dashboard_path: str,
 ) -> None:
     login_page = LoginPage(page)
     login_page.navigate(login_path)
-    login_page.login_action(ui_user["email"], ui_user["password"])
+    login_page.login_action(user_credentials["email"], user_credentials["password"])
 
     dashboard_page = DashboardPage(page)
     expect(page).to_have_url(re.compile(dashboard_path))

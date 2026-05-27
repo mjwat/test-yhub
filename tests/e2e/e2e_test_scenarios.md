@@ -26,3 +26,39 @@ Verify that a registered user can authenticate successfully via the web interfac
 ### Expected Result
 - Authentication succeeds and the user is redirected.
 - The UI reflects the "Logged In" state.
+
+
+# SC – Site Creation via UI
+
+## YH-UI-SC-001: Create site from Git repository URL
+
+### Goal
+Verify that an authorized user can create a site by providing a valid Git repository URL.
+
+### Test Data
+- Repository URL in env / config.
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+- A valid Git repository URL with a deployable static site is available.
+
+### Steps
+1. Enter a valid Git repository URL.
+2. Click the "Create" button.
+3. Verify that Sites list page is opened.
+4. Verify new site appears in the list with Create status.
+5. Wait until the site status becomes Active.
+6. Open the generated site URL.
+4. Verify new site is available.
+
+### Expected Result
+- Site is successfully created based on the provided Git repository.
+- An auto-generated domain is assigned.
+- The new site appears in the user’s site list.
+- Created site link is clickable and accessible.
+
+### Notes
+- Domain value should not be empty after creation.
+- Test must correctly handle asynchronous status updates while the site is being built/deployed.

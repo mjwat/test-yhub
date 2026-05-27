@@ -6,7 +6,7 @@ from utils.url import url_contains_expected
 
 def test_site_creation_page_available_for_authenticated_user(
     site_client: SiteClient,
-    ensure_no_sites: None,
+    clean_user_sites: None,
 ) -> None:
     response = site_client.get_site_creation_page()
 
@@ -26,7 +26,7 @@ def test_site_creation_page_available_for_authenticated_user(
 def test_site_creation_by_git(
     site_client: SiteClient,
     git_repo_url: str,
-    ensure_no_sites: None,
+    clean_user_sites: None,
 ) -> None:
     create_result = site_client.create_site_from_git_url(git_repo_url)
 

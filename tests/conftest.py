@@ -4,6 +4,12 @@ import pytest
 
 from utils.config import get_env_config
 
+pytest_plugins = (
+    "tests.fixtures.auth",
+    "tests.fixtures.navigation",
+    "tests.fixtures.sites",
+)
+
 
 @pytest.fixture(scope="session")
 def env_config() -> Dict[str, str]:

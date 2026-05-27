@@ -27,6 +27,8 @@ def get_env_config() -> Dict[str, str]:
     config["LOGIN_ENDPOINT"] = os.getenv("LOGIN_ENDPOINT", "/login").strip()
     config["LOGIN_PATH"] = os.getenv("LOGIN_PATH", "/login").strip()
     config["DASHBOARD_PATH"] = os.getenv("DASHBOARD_PATH", "/dashboard").strip()
+    config["SITE_CREATE_PATH"] = os.getenv("SITE_CREATE_PATH", "/site/create").strip()
+    config["SITES_LIST_PATH"] = os.getenv("SITES_LIST_PATH", "/site").strip()
     config["ADMIN_BASE_URL"] = config["ADMIN_BASE_URL"].rstrip("/")
     config["SITE_CREATE_PAGE_ENDPOINT"] = os.getenv("SITE_CREATE_PAGE_ENDPOINT", "/site/create").strip()
     config["SITE_ENDPOINT"] = os.getenv("SITE_ENDPOINT", "/site").strip()

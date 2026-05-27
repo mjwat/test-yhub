@@ -8,14 +8,14 @@ from utils.url import url_contains_expected
 
 def test_successful_login_with_valid_credentials(
     auth_client: AuthClient,
-    test_user: Dict[str, str],
+    user_credentials: Dict[str, str],
     admin_base_url: str,
 ) -> None:
     token = auth_client.get_csrf_token()
 
     response = auth_client.login(
-        email=test_user["email"],
-        password=test_user["password"],
+        email=user_credentials["email"],
+        password=user_credentials["password"],
         token=token,
     )
 

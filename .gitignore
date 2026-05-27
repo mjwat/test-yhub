@@ -5,5 +5,7 @@ venv/
 *.log
 *.tmp
 playwright-report/
+allure-results/
+allure-report/
 .vscode/
 .idea/

@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ALLURE_DIR="$ROOT_DIR/allure"
 RESULTS_DIR="$ALLURE_DIR/results"
 REPORT_DIR="$ALLURE_DIR/report"
+REPORT_INDEX="$REPORT_DIR/index.html"
 HISTORY_CACHE_DIR="$ALLURE_DIR/history"
 CATEGORIES_FILE="$ALLURE_DIR/categories.json"
 OPEN_REPORT=false
@@ -63,7 +64,7 @@ if [[ -f "$CATEGORIES_FILE" ]]; then
   cp "$CATEGORIES_FILE" "$RESULTS_DIR/categories.json"
 fi
 
-allure generate "$RESULTS_DIR" -o "$REPORT_DIR" --clean
+allure generate "$RESULTS_DIR" -o "$REPORT_DIR" --clean --single-file
 
 if [[ -d "$REPORT_DIR/history" ]]; then
   rm -rf "$HISTORY_CACHE_DIR"
@@ -72,7 +73,23 @@ if [[ -d "$REPORT_DIR/history" ]]; then
 fi
 
 if [[ "$OPEN_REPORT" == true ]]; then
-  allure open "$REPORT_DIR"
+  if [[ ! -f "$REPORT_INDEX" ]]; then
+    echo "Generated report index file was not found: $REPORT_INDEX" >&2
+    exit 1
+  fi
+
+  case "$(uname -s)" in
+    Darwin)
+      open "$REPORT_INDEX"
+      ;;
+    Linux)
+      xdg-open "$REPORT_INDEX"
+      ;;
+    *)
+      echo "Report generated at: $REPORT_INDEX"
+      echo "Open the file manually on this platform."
+      ;;
+  esac
 fi
 
 exit "$PYTEST_EXIT_CODE"

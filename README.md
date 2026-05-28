@@ -28,17 +28,22 @@ python3 -m pytest tests/api/test_auth_login.py --alluredir=allure/results
 
 ## Open the HTML report locally
 
-If the Allure CLI is installed on your machine, you can open the report directly:
+Generate static HTML output:
 
 ```bash
-allure serve allure/results
+allure generate allure/results -o allure/report --clean --single-file
 ```
 
-Or generate static HTML output and open it:
+Open the generated report file directly:
 
 ```bash
-allure generate allure/results -o allure/report --clean
-allure open allure/report
+open allure/report/index.html
+```
+
+On Linux, use:
+
+```bash
+xdg-open allure/report/index.html
 ```
 
 Note: `allure-pytest` creates the raw result files. HTML report generation requires the external Allure CLI to be installed locally.
@@ -64,6 +69,8 @@ Open the generated report after the run:
 ```bash
 ./scripts/run_allure_with_history.sh --open
 ```
+
+The `--open` option opens the generated static single-file `allure/report/index.html` report directly and does not start a local Allure web server.
 
 ## How local history works
 

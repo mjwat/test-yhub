@@ -51,6 +51,7 @@ clients/              → API communication
 models/               → response validation  
 utils/                → helpers  
 data/                 → static dataset
+allure/               → local Allure artifacts and source-controlled report config
 .env                  → sensitive data:
 conftest.py           → fixtures  
 test_scenarios.md     → test cases
@@ -61,6 +62,8 @@ test_scenarios.md     → test cases
 - Use pytest fixtures for setup/teardown
 - Keep tests independent and idempotent
 - Separate API and UI tests clearly
+- Use `allure/` as the canonical local Allure root for `results/`, `report/`, `history/`, and source-controlled files like `categories.json`
+- Do not create alternative top-level Allure output directories such as `allure-report/` or `allure-results/` unless the user explicitly asks for that structure
 
 ---
 

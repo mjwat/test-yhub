@@ -7,6 +7,7 @@ ALLURE_DIR="$ROOT_DIR/allure"
 RESULTS_DIR="$ALLURE_DIR/results"
 REPORT_DIR="$ALLURE_DIR/report"
 HISTORY_CACHE_DIR="$ALLURE_DIR/history"
+CATEGORIES_FILE="$ALLURE_DIR/categories.json"
 OPEN_REPORT=false
 PYTEST_ARGS=()
 
@@ -56,6 +57,10 @@ set -e
 if [[ -d "$HISTORY_CACHE_DIR/history" ]]; then
   mkdir -p "$RESULTS_DIR/history"
   cp -R "$HISTORY_CACHE_DIR/history/." "$RESULTS_DIR/history/"
+fi
+
+if [[ -f "$CATEGORIES_FILE" ]]; then
+  cp "$CATEGORIES_FILE" "$RESULTS_DIR/categories.json"
 fi
 
 allure generate "$RESULTS_DIR" -o "$REPORT_DIR" --clean

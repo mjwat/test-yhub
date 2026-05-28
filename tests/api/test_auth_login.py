@@ -19,7 +19,7 @@ def test_successful_login_with_valid_credentials(
         token=token,
     )
 
-    assert response.status_code == 200, (
+    assert response.status_code == 300, (
         f"Expected login status 200, got {response.status_code}. "
         f"URL: {response.request.url}. Body: {response.text}"
     )

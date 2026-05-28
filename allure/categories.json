@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Environment issues",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(Connection refused|ConnectionResetError|Connection aborted|Read timed out|ConnectTimeout|TimeoutError|Temporary failure in name resolution|Name or service not known|502 Bad Gateway|503 Service Unavailable|504 Gateway Timeout).*"
+  },
+  {
+    "name": "API issues",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*(HTTP|status code|response status|JSONDecodeError|RequestException|API response|unexpected response).*"
+  },
+  {
+    "name": "Playwright/browser issues",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*(Playwright|Timeout [0-9]+ms exceeded|Target page, context or browser has been closed|locator|strict mode violation|net::ERR_|page\\.goto|browser).*"
+  },
+  {
+    "name": "Assertion failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*(AssertionError|assert ).*"
+  }
+]

@@ -1,9 +1,13 @@
+import allure
+
 from clients.site_client import SiteClient
 from utils.url import url_contains_expected
 
 
 ## YH-API-SC-001: Site Creation Page is available for authenticated user
 
+@allure.feature("Site Creation")
+@allure.title("Authenticated user can open the site creation page")
 def test_site_creation_page_available_for_authenticated_user(
     site_client: SiteClient,
     clean_user_sites: None,
@@ -23,33 +27,38 @@ def test_site_creation_page_available_for_authenticated_user(
 
 # YH-API-SC-002: Create site from Git repository URL
 
+@allure.feature("Site Creation")
+@allure.title("User can create a site from a Git repository URL")
 def test_site_creation_by_git(
     site_client: SiteClient,
     git_repo_url: str,
     clean_user_sites: None,
 ) -> None:
-    create_result = site_client.create_site_from_git_url(git_repo_url)
+    with allure.step("Create a site from the Git repository URL"):
+        create_result = site_client.create_site_from_git_url(git_repo_url)
 
-    assert create_result["initial_status_code"] == 302, (
-        f"Expected create-by-git response status 302, got {create_result['initial_status_code']}. "
-        f"Create result: {create_result}"
-    )
+    with allure.step("Verify the create-site request completes successfully"):
+        assert create_result["initial_status_code"] == 302, (
+            f"Expected create-by-git response status 302, got {create_result['initial_status_code']}. "
+            f"Create result: {create_result}"
+        )
 
-    location_header = create_result["redirect_location"]
-    assert location_header, "Expected redirect Location header in create-by-git response."
+        location_header = create_result["redirect_location"]
+        assert location_header, "Expected redirect Location header in create-by-git response."
 
-    assert url_contains_expected(location_header, site_client.site_endpoint), (
-        "Expected redirect location to point to sites list page. "
-        f"Expected endpoint: {site_client.site_endpoint}, Location: {location_header}"
-    )
+        assert url_contains_expected(location_header, site_client.site_endpoint), (
+            "Expected redirect location to point to sites list page. "
+            f"Expected endpoint: {site_client.site_endpoint}, Location: {location_header}"
+        )
 
-    assert create_result["flash_message"] == "Site created successfully, and files uploaded.", (
-        "Expected success flash message after create-by-git redirect. "
-        f"Got: {create_result['flash_message']}"
-    )
+        assert create_result["flash_message"] == "Site created successfully, and files uploaded.", (
+            "Expected success flash message after create-by-git redirect. "
+            f"Got: {create_result['flash_message']}"
+        )
 
-    sites_after_creation = site_client.get_user_sites()
-    assert len(sites_after_creation) == 1, (
-        f"Expected exactly 1 site after creation, got {len(sites_after_creation)}. "
-        f"Sites: {sites_after_creation}"
-    )
+    with allure.step("Verify the new site appears in the sites list"):
+        sites_after_creation = site_client.get_user_sites()
+        assert len(sites_after_creation) == 1, (
+            f"Expected exactly 1 site after creation, got {len(sites_after_creation)}. "
+            f"Sites: {sites_after_creation}"
+        )

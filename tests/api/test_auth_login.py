@@ -1,11 +1,15 @@
 from typing import Dict
 
+import allure
+
 from clients.auth_client import AuthClient
 from utils.url import url_contains_expected
 
 
 ## YH-API-AU-001: Successful login with valid credentials
 
+@allure.feature("Authentication")
+@allure.title("User can log in with valid credentials")
 def test_successful_login_with_valid_credentials(
     auth_client: AuthClient,
     user_credentials: Dict[str, str],
@@ -19,7 +23,7 @@ def test_successful_login_with_valid_credentials(
         token=token,
     )
 
-    assert response.status_code == 300, (
+    assert response.status_code == 200, (
         f"Expected login status 200, got {response.status_code}. "
         f"URL: {response.request.url}. Body: {response.text}"
     )

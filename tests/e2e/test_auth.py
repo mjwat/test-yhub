@@ -1,6 +1,7 @@
 import re
 from typing import Dict
 
+import allure
 from playwright.sync_api import Page, expect
 
 from tests.e2e.pages.dashboard_page import DashboardPage
@@ -9,6 +10,8 @@ from tests.e2e.pages.login_page import LoginPage
 
 ## YH-UI-AU-001: Successful login with valid credentials
 
+@allure.feature("Authentication")
+@allure.title("User can log in with valid credentials")
 def test_successful_login (
     page: Page,
     user_credentials: Dict[str, str],

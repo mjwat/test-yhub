@@ -1,6 +1,7 @@
 import re
 from typing import Dict
 
+import allure
 import pytest
 from playwright.sync_api import Page, expect
 
@@ -34,15 +35,16 @@ def auth_client(api_base_url: str, env_config: Dict[str, str]) -> AuthClient:
 
 @pytest.fixture(scope="function")
 def logged_in_client(auth_client: AuthClient, user_credentials: Dict[str, str]) -> AuthClient:
-    auth_response = auth_client.authenticate(
-        email=user_credentials["email"],
-        password=user_credentials["password"],
-    )
-    if auth_response.status_code not in (200, 204):
-        raise RuntimeError(
-            f"Authentication failed. Status code: {auth_response.status_code}. "
-            f"URL: {auth_response.request.url}. Body: {auth_response.text[:500]}"
+    with allure.step("Prepare an authenticated API client"):
+        auth_response = auth_client.authenticate(
+            email=user_credentials["email"],
+            password=user_credentials["password"],
         )
+        if auth_response.status_code not in (200, 204):
+            raise RuntimeError(
+                f"Authentication failed. Status code: {auth_response.status_code}. "
+                f"URL: {auth_response.request.url}. Body: {auth_response.text[:500]}"
+            )
     return auth_client
 
 
@@ -54,13 +56,15 @@ def logged_in_admin(
     admin_base_url: str,
 ) -> DashboardPage:
     login_page = LoginPage(page)
-    login_page.navigate(login_path)
-    login_page.login_action(user_credentials["email"], user_credentials["password"])
-    
-    expect(page).to_have_url(re.compile(rf".*{re.escape(admin_base_url)}.*"), timeout=2_000)
-    
-    assert url_contains_expected(page.url, admin_base_url), (
-        "Expected final UI URL to point to admin area after login. "
-        f"Admin URL: {admin_base_url}. Final URL: {page.url}"
-    )
+    with allure.step("Log in to the admin UI as a valid user"):
+        login_page.navigate(login_path)
+        login_page.login_action(user_credentials["email"], user_credentials["password"])
+
+    with allure.step("Verify the admin area is opened after login"):
+        expect(page).to_have_url(re.compile(rf".*{re.escape(admin_base_url)}.*"), timeout=2_000)
+
+        assert url_contains_expected(page.url, admin_base_url), (
+            "Expected final UI URL to point to admin area after login. "
+            f"Admin URL: {admin_base_url}. Final URL: {page.url}"
+        )
     return DashboardPage(page)

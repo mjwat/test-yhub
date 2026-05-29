@@ -79,7 +79,7 @@ jobs:
             exit 0
           fi
 
-          allure generate allure/results -o allure/report --clean --single-file
+          allure generate allure/results -o allure/report --clean
 
       - name: Upload Allure raw results
         if: always()
@@ -109,13 +109,13 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload GitHub Pages artifact
-        if: always() && github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'master') && hashFiles('allure/report/index.html') != ''
+        if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' && hashFiles('allure/report/index.html') != ''
         uses: actions/upload-pages-artifact@v3
         with:
           path: allure/report
 
   deploy-pages:
-    if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'master')
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main'
     needs: pytest
     runs-on: ubuntu-latest
     permissions:

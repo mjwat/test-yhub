@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      BASE_URL: ${{ secrets.BASE_URL }}
-      ADMIN_BASE_URL: ${{ secrets.ADMIN_BASE_URL }}
+      BASE_URL: ${{ vars.BASE_URL }}
+      ADMIN_BASE_URL: ${{ vars.ADMIN_BASE_URL }}
       TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-      GIT_REP_URL: ${{ secrets.GIT_REP_URL }}
+      GIT_REP_URL: ${{ vars.GIT_REP_URL }}
 
     steps:
       - name: Check out repository

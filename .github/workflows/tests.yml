@@ -55,6 +55,32 @@ jobs:
             --alluredir=allure/results \
             --junitxml=test-results/pytest.xml
 
+      - name: Set up Java for Allure CLI
+        if: always()
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Allure CLI
+        if: always()
+        env:
+          ALLURE_VERSION: "2.42.0"
+        run: |
+          curl -sSL "https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz" -o /tmp/allure.tgz
+          tar -xzf /tmp/allure.tgz -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/allure-${ALLURE_VERSION}/bin" >> "$GITHUB_PATH"
+
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          if [ ! -d allure/results ] || [ -z "$(find allure/results -mindepth 1 -print -quit)" ]; then
+            echo "No Allure results found. Skipping report generation."
+            exit 0
+          fi
+
+          allure generate allure/results -o allure/report --clean --single-file
+
       - name: Upload Allure raw results
         if: always()
         uses: actions/upload-artifact@v4
@@ -70,5 +96,14 @@ jobs:
         with:
           name: test-results
           path: test-results
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload Allure HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure/report
           retention-days: 7
           if-no-files-found: warn

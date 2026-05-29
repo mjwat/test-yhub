@@ -32,11 +32,12 @@ def test_create_site_from_git(
     sites_page = SitesPage(logged_in_admin.page)
     with allure.step("Verify the new site appears in the sites list"):
         sites_page.assert_sites_list_page_opened(sites_list_path)
+
         sites_page.assert_first_site_status_created()
 
     with allure.step("Verify the generated site becomes active and accessible"):
         sites_page.wait_for_first_site_status_active()
-
+ 
         generated_link = sites_page.generated_site_link()
         generated_href = generated_link.get_attribute("href")
         assert generated_href and generated_href.strip(), "Expected generated site link to have non-empty href."

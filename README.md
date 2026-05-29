@@ -74,8 +74,8 @@ The `--open` option opens the generated static single-file `allure/report/index.
 
 ## How local history works
 
-The script removes old `allure/results/`, runs `python3 -m pytest --alluredir=allure/results`, restores any saved Allure `history` data before report generation, then builds a fresh `allure/report/`.
+The script removes old `allure/results/`, runs `python3 -m pytest --alluredir=allure/results`, restores any saved Allure `history` data before report generation, then builds a temporary full report to refresh trend data and a final single-file `allure/report/` for direct local opening.
 
-After the report is generated, the script saves `allure/report/history` into `allure/history/` so the next local run can reuse it and keep trend widgets populated.
+After the temporary report is generated, the script saves its refreshed `history` into `allure/history/` and reuses that updated history when generating the final single-file report. This keeps trend widgets populated without breaking direct `index.html` opening.
 
 On the first run, no history cache exists yet. The script skips restore safely, generates the report normally, and creates the local history baseline for later runs.

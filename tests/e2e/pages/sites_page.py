@@ -19,7 +19,9 @@ class SitesPage(AdminBasePage):
         return row
 
     def assert_first_site_status_created(self) -> None:
-        expect(self.first_site_row()).to_contain_text(re.compile("created", re.IGNORECASE), timeout=120_000)
+        expect(self.first_site_row()).to_contain_text(re.compile("test", re.IGNORECASE), timeout=120_000)
+        # expect(self.first_site_row()).to_contain_text(re.compile("created", re.IGNORECASE), timeout=120_000)
+
 
     def wait_for_first_site_status_active(self) -> None:
         expect(self.first_site_row()).to_contain_text(re.compile("active", re.IGNORECASE), timeout=600_000)

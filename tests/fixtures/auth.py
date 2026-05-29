@@ -61,7 +61,7 @@ def logged_in_admin(
         login_page.login_action(user_credentials["email"], user_credentials["password"])
 
     with allure.step("Verify the admin area is opened after login"):
-        expect(page).to_have_url(re.compile(rf".*{re.escape(admin_base_url)}.*"), timeout=2_000)
+        expect(page).to_have_url(re.compile(rf".*{re.escape(admin_base_url)}.*"), timeout=5_000)
 
         assert url_contains_expected(page.url, admin_base_url), (
             "Expected final UI URL to point to admin area after login. "

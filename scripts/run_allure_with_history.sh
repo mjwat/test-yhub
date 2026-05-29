@@ -8,6 +8,7 @@ RESULTS_DIR="$ALLURE_DIR/results"
 REPORT_DIR="$ALLURE_DIR/report"
 REPORT_INDEX="$REPORT_DIR/index.html"
 HISTORY_CACHE_DIR="$ALLURE_DIR/history"
+TEMP_REPORT_DIR=""
 CATEGORIES_FILE="$ALLURE_DIR/categories.json"
 OPEN_REPORT=false
 PYTEST_ARGS=()
@@ -43,6 +44,14 @@ if ! command -v allure >/dev/null 2>&1; then
   exit 1
 fi
 
+cleanup() {
+  if [[ -n "$TEMP_REPORT_DIR" && -d "$TEMP_REPORT_DIR" ]]; then
+    rm -rf "$TEMP_REPORT_DIR"
+  fi
+}
+
+trap cleanup EXIT
+
 rm -rf "$RESULTS_DIR"
 mkdir -p "$RESULTS_DIR"
 
@@ -56,6 +65,7 @@ PYTEST_EXIT_CODE=$?
 set -e
 
 if [[ -d "$HISTORY_CACHE_DIR/history" ]]; then
+  rm -rf "$RESULTS_DIR/history"
   mkdir -p "$RESULTS_DIR/history"
   cp -R "$HISTORY_CACHE_DIR/history/." "$RESULTS_DIR/history/"
 fi
@@ -64,13 +74,23 @@ if [[ -f "$CATEGORIES_FILE" ]]; then
   cp "$CATEGORIES_FILE" "$RESULTS_DIR/categories.json"
 fi
 
-allure generate "$RESULTS_DIR" -o "$REPORT_DIR" --clean --single-file
+TEMP_REPORT_DIR="$(mktemp -d "$ALLURE_DIR/.allure-history-build.XXXXXX")"
 
-if [[ -d "$REPORT_DIR/history" ]]; then
+# Build a temporary full report first so Allure computes updated history for
+# the current run, then reuse that history in the final single-file report.
+allure generate "$RESULTS_DIR" -o "$TEMP_REPORT_DIR" --clean
+
+if [[ -d "$TEMP_REPORT_DIR/history" ]]; then
   rm -rf "$HISTORY_CACHE_DIR"
   mkdir -p "$HISTORY_CACHE_DIR/history"
-  cp -R "$REPORT_DIR/history/." "$HISTORY_CACHE_DIR/history/"
+  cp -R "$TEMP_REPORT_DIR/history/." "$HISTORY_CACHE_DIR/history/"
+
+  rm -rf "$RESULTS_DIR/history"
+  mkdir -p "$RESULTS_DIR/history"
+  cp -R "$TEMP_REPORT_DIR/history/." "$RESULTS_DIR/history/"
 fi
+
+allure generate "$RESULTS_DIR" -o "$REPORT_DIR" --clean --single-file
 
 if [[ "$OPEN_REPORT" == true ]]; then
   if [[ ! -f "$REPORT_INDEX" ]]; then

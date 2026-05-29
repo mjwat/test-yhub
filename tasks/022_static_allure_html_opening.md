@@ -36,4 +36,5 @@ Replace local Allure report opening commands that keep Java processes running wi
 - [x] Switched Allure report generation to single-file mode for direct local opening
 - [x] Kept history and categories support unchanged
 - [x] Updated README to describe the static HTML workflow
+- [x] Updated the script to refresh history through a temporary full report before the final single-file build
 - [ ] Validate script syntax

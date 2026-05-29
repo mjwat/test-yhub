@@ -50,8 +50,6 @@ jobs:
         run: |
           python -m pytest \
             -m "not utility" \
-            tests/api/test_auth_login.py \
-            tests/e2e/test_auth.py \
             --alluredir=allure/results \
             --junitxml=test-results/pytest.xml
 

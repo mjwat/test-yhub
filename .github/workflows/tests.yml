@@ -69,6 +69,38 @@ jobs:
           tar -xzf /tmp/allure.tgz -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/allure-${ALLURE_VERSION}/bin" >> "$GITHUB_PATH"
 
+      - name: Restore Allure history from GitHub Pages
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" != "push" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "Skipping GitHub Pages history restore for event '${{ github.event_name }}'."
+            exit 0
+          fi
+
+          if [ "${{ github.ref_name }}" != "main" ]; then
+            echo "Skipping GitHub Pages history restore for branch '${{ github.ref_name }}'."
+            exit 0
+          fi
+
+          PAGES_HISTORY_URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/history"
+          mkdir -p allure/results/history
+
+          for file in \
+            history.json \
+            history-trend.json \
+            duration-trend.json \
+            retry-trend.json \
+            categories-trend.json
+          do
+            curl -fsSL "$PAGES_HISTORY_URL/$file" -o "allure/results/history/$file" || true
+          done
+
+          if [ -n "$(find allure/results/history -type f -print -quit)" ]; then
+            echo "Restored previous Allure history from GitHub Pages."
+          else
+            echo "No previous Allure history found on GitHub Pages. Continuing without history restore."
+          fi
+
       - name: Generate Allure HTML report
         if: always()
         run: |

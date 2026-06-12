@@ -25,10 +25,9 @@ def test_successful_login (
     dashboard_page = DashboardPage(page)
     expect(page).to_have_url(re.compile(dashboard_path))
 
-    # is_logout_visible = dashboard_page.sidebar.logout_link.first.is_visible()
-    is_logout_visible = False
+    is_dashboard_link_visible = dashboard_page.navigation.dashboard_link.first.is_visible()
 
-    assert is_logout_visible, (
+    assert is_dashboard_link_visible, (
         "Expected logged-in UI indicator to be visible after login. "
-        "Logout link is not visible."
+        "Dashboard link is not visible."
     )

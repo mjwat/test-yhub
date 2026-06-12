@@ -8,12 +8,10 @@ from tests.e2e.pages.admin_base_page import AdminBasePage
 class SiteCreatePage(AdminBasePage):
     def __init__(self, page: Page) -> None:
         super().__init__(page)
-        self.github_repository_button: Locator = page.get_by_role(
-            "button",
-            name=re.compile(r"github\s+repository", re.IGNORECASE),
-        ).first
+        self.github_repository_button: Locator = page.get_by_role("button", 
+            name=re.compile(r"github", re.IGNORECASE)).first
         self.git_repo_input: Locator = page.get_by_placeholder(re.compile("github", re.IGNORECASE)).first
-        self.create_button: Locator = page.get_by_role("button", name=re.compile("create", re.IGNORECASE)).first
+        self.create_button: Locator = page.get_by_role("button", name=re.compile("Создать проект", re.IGNORECASE)).first
 
     def choose_github_repository(self) -> None:
         expect(self.github_repository_button).to_be_visible(timeout=20_000)

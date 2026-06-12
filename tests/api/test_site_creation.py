@@ -1,6 +1,7 @@
 import allure
 
 from clients.site_client import SiteClient
+from utils.url import build_url
 from utils.url import url_contains_expected
 
 
@@ -9,19 +10,22 @@ from utils.url import url_contains_expected
 @allure.feature("Site Creation")
 @allure.title("Authenticated user can open the site creation page")
 def test_site_creation_page_available_for_authenticated_user(
+    admin_base_url: str,
+    dashboard_deploy_path: str,
     site_client: SiteClient,
     clean_user_sites: None,
 ) -> None:
     response = site_client.get_site_creation_page()
+    expected_url = build_url(admin_base_url, dashboard_deploy_path)
 
     assert response.status_code == 200, (
         f"Expected status code 200 for site creation page, got {response.status_code}. "
         f"Final URL: {response.url}. Body: {response.text[:500]}"
     )
 
-    assert url_contains_expected(response.url, site_client.site_create_page_endpoint), (
-        "Expected final URL to point to the site creation page, "
-        f"expected endpoint: {site_client.site_create_page_endpoint}, final URL: {response.url}"
+    assert response.url == expected_url, (
+        "Expected final URL to point to the dashboard deploy view. "
+        f"Expected URL: {expected_url}. Final URL: {response.url}"
     )
 
 

@@ -141,13 +141,13 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload GitHub Pages artifact
-        if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' && hashFiles('allure/report/index.html') != ''
+        if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && github.ref_name == 'main' && hashFiles('allure/report/index.html') != ''
         uses: actions/upload-pages-artifact@v3
         with:
           path: allure/report
 
   deploy-pages:
-    if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main'
+    if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && github.ref_name == 'main'
     needs: pytest
     runs-on: ubuntu-latest
     permissions:

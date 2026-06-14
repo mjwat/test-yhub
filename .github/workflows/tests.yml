@@ -74,7 +74,7 @@ jobs:
       - name: Restore Allure history from GitHub Pages
         if: always()
         run: |
-          if [ "${{ github.event_name }}" != "push" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" != "push" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ] && [ "${{ github.event_name }}" != "schedule" ]; then
             echo "Skipping GitHub Pages history restore for event '${{ github.event_name }}'."
             exit 0
           fi

@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import re
 
 import allure
@@ -35,14 +36,50 @@ def test_create_site_from_git(
 
         sites_page.assert_first_site_status_created()
 
-    with allure.step("Verify the generated site becomes active and accessible"):
+    with allure.step("Verify the generated site becomes active"):
         sites_page.wait_for_first_site_status_active()
  
-        # update steps after link will fixed
-        # generated_link = sites_page.generated_site_link()
-        # gener ated_href = generated_link.get_attribute("href")
-        # assert generated_href and generated_href.strip(), "Expected generated site link to have non-empty href."
+    with allure.step("Verify the generated site is accessible"):
+        popup = sites_page.open_generated_site_in_new_tab()
+        expect(popup).to_have_url(re.compile(r"^https?://"))
+        expect(popup.locator("body")).to_be_visible()
 
+
+## YH-UI-SC-002: Create site from single file and with custom domain
+
+@allure.feature("Site Creation")
+@allure.title("User can create a site from a single file with custom domain")
+def test_create_site_from_single_file_with_custom_domain(
+    logged_in_admin: DashboardPage,
+    clean_user_sites: None,
+    site_create_path: str,
+    sites_list_path: str,
+) -> None:
+    custom_domain = "my-test-domain"
+    html_file_path = Path(__file__).resolve().parents[2] / "data" / "index.html"
+
+    assert html_file_path.is_file(), (
+        "Expected HTML upload file to exist for the single-file site creation test. "
+        f"Missing file: {html_file_path}"
+    )
+
+    site_create_page = SiteCreatePage(logged_in_admin.page)
+    with allure.step("Open the site creation page"):
+        site_create_page.navigate(site_create_path)
+
+    with allure.step("Create a site from a single HTML file with custom domain"):
+        site_create_page.create_from_single_file(custom_domain, str(html_file_path))
+
+    sites_page = SitesPage(logged_in_admin.page)
+    with allure.step("Verify the new site appears in the sites list"):
+        sites_page.assert_sites_list_page_opened(sites_list_path)
+        sites_page.assert_first_site_status_created()
+
+    with allure.step("Verify the generated site becomes active and keeps the custom domain"):
+        sites_page.wait_for_first_site_status_active()
+        sites_page.assert_first_site_contains_domain(custom_domain)
+
+    with allure.step("Verify the generated site is accessible"):
         popup = sites_page.open_generated_site_in_new_tab()
         expect(popup).to_have_url(re.compile(r"^https?://"))
         expect(popup.locator("body")).to_be_visible()

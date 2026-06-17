@@ -22,6 +22,11 @@ class SitesPage(AdminBasePage):
         expect(self.first_site_row()).to_contain_text(re.compile("Идет публикация", re.IGNORECASE), timeout=120_000)
         # expect(self.first_site_row()).to_contain_text(re.compile("created", re.IGNORECASE), timeout=120_000)
 
+    def assert_first_site_contains_domain(self, expected_domain: str) -> None:
+        expect(self.first_site_row()).to_contain_text(
+            re.compile(re.escape(expected_domain), re.IGNORECASE),
+            timeout=60_000,
+        )
 
     def wait_for_first_site_status_active(self) -> None:
         expect(self.first_site_row()).to_contain_text(re.compile("Опубликован", re.IGNORECASE), timeout=60_000)

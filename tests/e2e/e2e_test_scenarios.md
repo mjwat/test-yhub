@@ -45,13 +45,14 @@ Verify that an authorized user can create a site by providing a valid Git reposi
 - A valid Git repository URL with a deployable static site is available.
 
 ### Steps
-1. Enter a valid Git repository URL.
-2. Click the "Create" button.
-3. Verify that Sites list page is opened.
-4. Verify new site appears in the list with Create status.
-5. Wait until the site status becomes Active.
-6. Open the generated site URL.
-4. Verify new site is available.
+1. Select Git tab.
+2. Enter a valid Git repository URL.
+3. Click submit button.
+4. Verify that Sites list page is opened.
+5. Verify new site appears in the list with Create status.
+6. Wait until the site status becomes Published.
+7. Open the generated site URL.
+8. Verify new site is available.
 
 ### Expected Result
 - Site is successfully created based on the provided Git repository.
@@ -62,3 +63,56 @@ Verify that an authorized user can create a site by providing a valid Git reposi
 ### Notes
 - Domain value should not be empty after creation.
 - Test must correctly handle asynchronous status updates while the site is being built/deployed.
+
+
+
+## YH-UI-SC-002: Create site from single file and with custom domain
+
+### Goal
+Verify that an authorized user can create a site by providing a html file and with custom domain.
+
+### Test Data
+- test file index.html in /data directory.
+- domain is "my-test-domain"
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+- Test file exist.
+
+### Steps
+1. Enter domain.
+2. Upload html file.
+3. Click submit button.
+4. Verify that Sites list page is opened.
+5. Verify new site appears in the list with Create status.
+6. Wait until the site status becomes Published.
+7. Check created site domain matches entered value.
+8. Open the generated site URL.
+9. Verify new site is available.
+
+
+## YH-UI-SC-003: Create site from archive
+
+### Goal
+Verify that an authorized user can create a site by providing archive.
+
+### Test Data
+- test file archive.zip in /data directory.
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+- Test file exist.
+
+### Steps
+1. Upload zip file.
+2. Click submit button.
+3. Verify that Sites list page is opened.
+4. Verify new site appears in the list with Create status.
+5. Wait until the site status becomes Published.
+6. Open the generated site URL.
+7. Verify new site is available.
+

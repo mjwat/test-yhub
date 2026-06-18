@@ -79,7 +79,7 @@ Verify that an authorized user can create a site by providing a html file and wi
 - User is authenticated.
 - User has no created site on free plan.
 - Site Creation page is opened.
-- Test file exist.
+- Test file exists.
 
 ### Steps
 1. Enter domain.
@@ -105,7 +105,7 @@ Verify that an authorized user can create a site by providing archive.
 - User is authenticated.
 - User has no created site on free plan.
 - Site Creation page is opened.
-- Test file exist.
+- Test file exists.
 
 ### Steps
 1. Upload zip file.
@@ -130,10 +130,80 @@ Verify that an authorized user can create a site by providing pdf.
 - User is authenticated.
 - User has no created site on free plan.
 - Site Creation page is opened.
-- Test file exist.
+- Test file exists.
 
 ### Steps
 1. Upload pdf file.
+2. Click submit button.
+3. Verify that Sites list page is opened.
+4. Verify new site appears in the list with Create status.
+5. Wait until the site status becomes Published.
+6. Open the generated site URL.
+7. Verify new site is available.
+
+
+## YH-UI-SC-005: Create site from folder via drag and drop
+
+### Goal
+Verify that an authorized user can create a site by uploading a project folder via the drop area. 
+
+### Test Data
+- test directory /data/simple_html_css.
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+- Test directory exists.
+
+### Steps
+1. Drag and drop the test folder into the upload area.
+2. Click submit button.
+3. Verify that Sites list page is opened.
+4. Verify new site appears in the list with Create status.
+5. Wait until the site status becomes Published.
+6. Open the generated site URL.
+7. Verify new site is available.
+
+
+## YH-UI-SC-006: Create site from folder via Select folder button
+
+### Goal
+Verify that an authorized user can create a site by using the Select folder button.
+
+### Test Data
+- test directory /data/simple_html_css.
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+- Test directory exists.
+
+### Steps
+1. Click the Select folder button. 
+2. Select and upload test folder.
+3. Confirm upload in modal popup.
+4. Click submit button.
+5. Verify that Sites list page is opened.
+6. Verify new site appears in the list with Create status.
+7. Wait until the site status becomes Published.
+8. Open the generated site URL.
+9. Verify new site is available.
+
+
+## YH-UI-SC-007: Create site by code editor
+
+### Goal
+Verify that an authorized user can create a site using code editor.
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+
+### Steps
+1. Select Editor tab.
 2. Click submit button.
 3. Verify that Sites list page is opened.
 4. Verify new site appears in the list with Create status.

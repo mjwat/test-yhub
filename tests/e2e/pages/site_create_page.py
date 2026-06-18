@@ -13,7 +13,8 @@ class SiteCreatePage(AdminBasePage):
             name=re.compile(r"github", re.IGNORECASE)).first
         self.git_repo_input: Locator = page.get_by_placeholder(re.compile("github", re.IGNORECASE)).first
         self.custom_domain_input: Locator = page.get_by_placeholder("my-awesome-project").first
-        self.single_file_input: Locator = page.locator("input[type='file']").first
+        self.single_file_input: Locator = page.locator("input[type='file']:not([webkitdirectory])").first
+        self.folder_input: Locator = page.locator("input[type='file'][webkitdirectory]").first
         self.create_button: Locator = page.get_by_role("button", name=re.compile("Создать проект", re.IGNORECASE)).first
 
     def choose_github_repository(self) -> None:
@@ -28,13 +29,20 @@ class SiteCreatePage(AdminBasePage):
         expect(self.create_button).to_be_enabled()
         self.create_button.click()
 
-    def create_from_uploaded_file(self, file_path: str, custom_domain: Optional[str] = None) -> None:
+    def create_from_upload(self, upload_path: str, custom_domain: Optional[str] = None) -> None:
         if custom_domain is not None:
             expect(self.custom_domain_input).to_be_visible(timeout=20_000)
             self.custom_domain_input.fill(custom_domain)
 
         expect(self.single_file_input).to_be_attached(timeout=20_000)
-        self.single_file_input.set_input_files(file_path)
+        self.single_file_input.set_input_files(upload_path)
+
+        expect(self.create_button).to_be_enabled()
+        self.create_button.click()
+
+    def create_from_folder(self, folder_path: str) -> None:
+        expect(self.folder_input).to_be_attached(timeout=20_000)
+        self.folder_input.set_input_files(folder_path)
 
         expect(self.create_button).to_be_enabled()
         self.create_button.click()

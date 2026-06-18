@@ -69,7 +69,7 @@ def test_create_site_from_single_file_with_custom_domain(
         site_create_page.navigate(site_create_path)
 
     with allure.step("Create a site from a single HTML file with custom domain"):
-        site_create_page.create_from_uploaded_file(str(html_file_path), custom_domain=custom_domain)
+        site_create_page.create_from_upload(str(html_file_path), custom_domain=custom_domain)
 
     sites_page = SitesPage(logged_in_admin.page)
     with allure.step("Verify the new site appears in the sites list"):
@@ -108,7 +108,7 @@ def test_create_site_from_archive(
         site_create_page.navigate(site_create_path)
 
     with allure.step("Create a site from an archive file"):
-        site_create_page.create_from_uploaded_file(str(archive_file_path))
+        site_create_page.create_from_upload(str(archive_file_path))
 
     sites_page = SitesPage(logged_in_admin.page)
     with allure.step("Verify the new site appears in the sites list"):
@@ -146,7 +146,7 @@ def test_create_site_from_pdf(
         site_create_page.navigate(site_create_path)
 
     with allure.step("Create a site from a PDF file"):
-        site_create_page.create_from_uploaded_file(str(pdf_file_path))
+        site_create_page.create_from_upload(str(pdf_file_path))
 
     sites_page = SitesPage(logged_in_admin.page)
     with allure.step("Verify the new site appears in the sites list"):
@@ -161,3 +161,41 @@ def test_create_site_from_pdf(
         expect(popup).to_have_url(re.compile(r"^https?://"))
         popup.wait_for_load_state("domcontentloaded", timeout=60_000)
         assert not popup.is_closed(), "Expected generated PDF site tab to remain open after loading."
+
+
+## YH-UI-SC-005: Create site from folder via drag and drop
+
+@allure.feature("Site Creation")
+@allure.title("User can create a site from a folder via drag and drop")
+def test_create_site_from_folder_drag_and_drop(
+    logged_in_admin: DashboardPage,
+    clean_user_sites: None,
+    site_create_path: str,
+    sites_list_path: str,
+) -> None:
+    folder_path = Path(__file__).resolve().parents[2] / "data" / "simple_html_css"
+
+    assert folder_path.is_dir(), (
+        "Expected folder upload test directory to exist for the folder drag-and-drop site creation test. "
+        f"Missing directory: {folder_path}"
+    )
+
+    site_create_page = SiteCreatePage(logged_in_admin.page)
+    with allure.step("Open the site creation page"):
+        site_create_page.navigate(site_create_path)
+
+    with allure.step("Create a site from a folder via drag and drop upload"):
+        site_create_page.create_from_folder(str(folder_path))
+
+    sites_page = SitesPage(logged_in_admin.page)
+    with allure.step("Verify the new site appears in the sites list"):
+        sites_page.assert_sites_list_page_opened(sites_list_path)
+        sites_page.assert_first_site_status_created()
+
+    with allure.step("Verify the generated site becomes active"):
+        sites_page.wait_for_first_site_status_active()
+
+    with allure.step("Verify the generated site is accessible"):
+        popup = sites_page.open_generated_site_in_new_tab()
+        expect(popup).to_have_url(re.compile(r"^https?://"))
+        expect(popup.locator("body")).to_be_visible()

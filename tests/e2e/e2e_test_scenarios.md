@@ -116,3 +116,27 @@ Verify that an authorized user can create a site by providing archive.
 6. Open the generated site URL.
 7. Verify new site is available.
 
+
+
+## YH-UI-SC-004: Create site with pdf
+
+### Goal
+Verify that an authorized user can create a site by providing pdf.
+
+### Test Data
+- test file sample.pdf in /data directory.
+
+### Preconditions
+- User is authenticated.
+- User has no created site on free plan.
+- Site Creation page is opened.
+- Test file exist.
+
+### Steps
+1. Upload pdf file.
+2. Click submit button.
+3. Verify that Sites list page is opened.
+4. Verify new site appears in the list with Create status.
+5. Wait until the site status becomes Published.
+6. Open the generated site URL.
+7. Verify new site is available.

@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from playwright.sync_api import Locator, Page, expect
 
@@ -27,9 +28,10 @@ class SiteCreatePage(AdminBasePage):
         expect(self.create_button).to_be_enabled()
         self.create_button.click()
 
-    def create_from_single_file(self, custom_domain: str, file_path: str) -> None:
-        expect(self.custom_domain_input).to_be_visible(timeout=20_000)
-        self.custom_domain_input.fill(custom_domain)
+    def create_from_uploaded_file(self, file_path: str, custom_domain: Optional[str] = None) -> None:
+        if custom_domain is not None:
+            expect(self.custom_domain_input).to_be_visible(timeout=20_000)
+            self.custom_domain_input.fill(custom_domain)
 
         expect(self.single_file_input).to_be_attached(timeout=20_000)
         self.single_file_input.set_input_files(file_path)

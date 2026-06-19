@@ -3,6 +3,7 @@ from typing import Dict
 import pytest
 
 from clients.auth_client import AuthClient
+from clients.site_client import SITE_COUNT_LIMIT
 from clients.site_client import SiteClient
 
 
@@ -31,16 +32,15 @@ def site_client(
 
 
 @pytest.fixture(scope="function")
-def clean_user_sites(site_client: SiteClient) -> None:
-    existing_sites = site_client.get_user_sites()
-    if existing_sites:
+def ensure_site_creation_available(site_client: SiteClient) -> None:
+    if site_client.is_site_count_limit_reached():
         cleanup_summary = site_client.delete_all_sites()
         if cleanup_summary["failed_count"] > 0:
             raise RuntimeError(f"API precondition cleanup failed for some sites: {cleanup_summary}")
 
     remaining_sites = site_client.get_user_sites()
-    if remaining_sites:
+    if len(remaining_sites) >= SITE_COUNT_LIMIT:
         raise RuntimeError(
-            "API precondition cleanup did not finish. "
-            f"Expected zero sites before test, got: {remaining_sites}"
+            "API site-creation precondition did not finish. "
+            f"Expected fewer than {SITE_COUNT_LIMIT} sites before test, got: {remaining_sites}"
         )

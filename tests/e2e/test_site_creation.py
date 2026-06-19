@@ -21,7 +21,7 @@ TEST_DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 @allure.title("User can create a site from a Git repository URL")
 def test_create_site_from_git(
     logged_in_admin: DashboardPage,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
     git_repo_url: str,
     site_create_path: str,
     sites_list_path: str,
@@ -43,7 +43,7 @@ def test_create_site_from_git(
 @allure.title("User can create a site from a single file with custom domain")
 def test_create_site_from_single_file_with_custom_domain(
     logged_in_admin: DashboardPage,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
     site_create_path: str,
     sites_list_path: str,
 ) -> None:
@@ -73,7 +73,7 @@ def test_create_site_from_single_file_with_custom_domain(
 @allure.title("User can create a site from an archive")
 def test_create_site_from_archive(
     logged_in_admin: DashboardPage,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
     site_create_path: str,
     sites_list_path: str,
 ) -> None:
@@ -98,7 +98,7 @@ def test_create_site_from_archive(
 @allure.title("User can create a site from a PDF file")
 def test_create_site_from_pdf(
     logged_in_admin: DashboardPage,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
     site_create_path: str,
     sites_list_path: str,
 ) -> None:
@@ -127,7 +127,7 @@ def test_create_site_from_pdf(
 @allure.title("User can create a site from a folder via drag and drop")
 def test_create_site_from_folder_drag_and_drop(
     logged_in_admin: DashboardPage,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
     site_create_path: str,
     sites_list_path: str,
 ) -> None:
@@ -152,7 +152,7 @@ def test_create_site_from_folder_drag_and_drop(
 @allure.title("User can create a site from the default code editor project")
 def test_create_site_from_code_editor(
     logged_in_admin: DashboardPage,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
     site_create_path: str,
     sites_list_path: str,
 ) -> None:

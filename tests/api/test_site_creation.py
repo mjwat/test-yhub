@@ -13,7 +13,7 @@ def test_site_creation_page_available_for_authenticated_user(
     admin_base_url: str,
     dashboard_deploy_path: str,
     site_client: SiteClient,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
 ) -> None:
     response = site_client.get_site_creation_page()
     expected_url = build_url(admin_base_url, dashboard_deploy_path)
@@ -36,8 +36,12 @@ def test_site_creation_page_available_for_authenticated_user(
 def test_site_creation_by_git(
     site_client: SiteClient,
     git_repo_url: str,
-    clean_user_sites: None,
+    ensure_site_creation_available: None,
 ) -> None:
+    with allure.step("Capture site list before creation"):
+        sites_before_creation = site_client.get_user_sites()
+        existing_site_ids = {site["id"] for site in sites_before_creation}
+
     with allure.step("Create a site from the Git repository URL"):
         create_result = site_client.create_site_from_git_url(git_repo_url)
 
@@ -62,7 +66,17 @@ def test_site_creation_by_git(
 
     with allure.step("Verify the new site appears in the sites list"):
         sites_after_creation = site_client.get_user_sites()
-        assert len(sites_after_creation) == 1, (
-            f"Expected exactly 1 site after creation, got {len(sites_after_creation)}. "
-            f"Sites: {sites_after_creation}"
+        new_sites = [site for site in sites_after_creation if site["id"] not in existing_site_ids]
+
+        assert len(new_sites) == 1, (
+            "Expected exactly one newly created site to appear in the sites list. "
+            f"Sites before creation: {sites_before_creation}. "
+            f"Sites after creation: {sites_after_creation}. "
+            f"Detected new sites: {new_sites}"
+        )
+
+        new_site = new_sites[0]
+        assert new_site["full_link"], (
+            "Expected the newly created site to include a non-empty full_link. "
+            f"New site: {new_site}"
         )

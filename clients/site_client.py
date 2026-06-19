@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 
 from clients.base_api_client import BaseApiClient
 
+SITE_COUNT_LIMIT = 2
+
 
 class SiteClient(BaseApiClient):
     def __init__(
@@ -209,3 +211,12 @@ class SiteClient(BaseApiClient):
             })
 
         return result
+
+    def is_site_count_limit_reached(self) -> bool:
+        current_site_count = len(self.get_user_sites())
+        self.logger.info(
+            "Site count limit check: current_site_count=%s limit=%s",
+            current_site_count,
+            SITE_COUNT_LIMIT,
+        )
+        return current_site_count >= SITE_COUNT_LIMIT

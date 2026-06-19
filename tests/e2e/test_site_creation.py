@@ -199,3 +199,34 @@ def test_create_site_from_folder_drag_and_drop(
         popup = sites_page.open_generated_site_in_new_tab()
         expect(popup).to_have_url(re.compile(r"^https?://"))
         expect(popup.locator("body")).to_be_visible()
+
+
+## YH-UI-SC-007: Create site by code editor
+
+@allure.feature("Site Creation")
+@allure.title("User can create a site from the default code editor project")
+def test_create_site_from_code_editor(
+    logged_in_admin: DashboardPage,
+    clean_user_sites: None,
+    site_create_path: str,
+    sites_list_path: str,
+) -> None:
+    site_create_page = SiteCreatePage(logged_in_admin.page)
+    with allure.step("Open the site creation page"):
+        site_create_page.navigate(site_create_path)
+
+    with allure.step("Create a site from the default code editor project"):
+        site_create_page.create_from_editor()
+
+    sites_page = SitesPage(logged_in_admin.page)
+    with allure.step("Verify the new site appears in the sites list"):
+        sites_page.assert_sites_list_page_opened(sites_list_path)
+        sites_page.assert_first_site_status_created()
+
+    with allure.step("Verify the generated site becomes active"):
+        sites_page.wait_for_first_site_status_active()
+
+    with allure.step("Verify the generated site is accessible"):
+        popup = sites_page.open_generated_site_in_new_tab()
+        expect(popup).to_have_url(re.compile(r"^https?://"))
+        expect(popup.locator("body")).to_be_visible()

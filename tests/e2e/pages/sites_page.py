@@ -10,8 +10,8 @@ class SitesPage(AdminBasePage):
         super().__init__(page)
         self.site_rows: Locator = page.locator("//main/div/article")
 
-    def assert_sites_list_page_opened(self, sites_list_path: str) -> None:
-        expect(self.page).to_have_url(re.compile(rf".*{re.escape(sites_list_path)}(/)?([?#].*)?$"))
+    def assert_sites_list_page_opened(self, sites_list_url: str) -> None:
+        expect(self.page).to_have_url(re.compile(rf"^{re.escape(sites_list_url)}(/)?([?#].*)?$"))
 
     def first_site_row(self) -> Locator:
         row = self.site_rows.first

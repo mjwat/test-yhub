@@ -23,17 +23,17 @@ def test_create_site_from_git(
     logged_in_admin: DashboardPage,
     ensure_site_creation_available: None,
     git_repo_url: str,
-    site_create_path: str,
-    sites_list_path: str,
+    site_create_url: str,
+    sites_list_url: str,
 ) -> None:
     site_create_page = SiteCreatePage(logged_in_admin.page)
     with allure.step("Open the site creation page"):
-        site_create_page.navigate(site_create_path)
+        site_create_page.navigate(site_create_url)
 
     with allure.step("Create a site from the Git repository URL"):
         site_create_page.create_via_git(git_repo_url)
 
-    _verify_created_site(logged_in_admin.page, sites_list_path)
+    _verify_created_site(logged_in_admin.page, sites_list_url)
 
 
 
@@ -44,8 +44,8 @@ def test_create_site_from_git(
 def test_create_site_from_single_file_with_custom_domain(
     logged_in_admin: DashboardPage,
     ensure_site_creation_available: None,
-    site_create_path: str,
-    sites_list_path: str,
+    site_create_url: str,
+    sites_list_url: str,
 ) -> None:
     custom_domain = "my-test-domain"
     html_file_path = _get_required_test_file(
@@ -55,14 +55,14 @@ def test_create_site_from_single_file_with_custom_domain(
 
     site_create_page = SiteCreatePage(logged_in_admin.page)
     with allure.step("Open the site creation page"):
-        site_create_page.navigate(site_create_path)
+        site_create_page.navigate(site_create_url)
 
     with allure.step("Create a site from a single HTML file with custom domain"):
         site_create_page.create_via_upload_file(str(html_file_path), custom_domain=custom_domain)
 
     _verify_created_site(
         logged_in_admin.page,
-        sites_list_path,
+        sites_list_url,
         expected_domain=custom_domain,
     )
 
@@ -74,8 +74,8 @@ def test_create_site_from_single_file_with_custom_domain(
 def test_create_site_from_archive(
     logged_in_admin: DashboardPage,
     ensure_site_creation_available: None,
-    site_create_path: str,
-    sites_list_path: str,
+    site_create_url: str,
+    sites_list_url: str,
 ) -> None:
     archive_file_path = _get_required_test_file(
         "archive.zip",
@@ -84,12 +84,12 @@ def test_create_site_from_archive(
 
     site_create_page = SiteCreatePage(logged_in_admin.page)
     with allure.step("Open the site creation page"):
-        site_create_page.navigate(site_create_path)
+        site_create_page.navigate(site_create_url)
 
     with allure.step("Create a site from an archive file"):
         site_create_page.create_via_upload_file(str(archive_file_path))
 
-    _verify_created_site(logged_in_admin.page, sites_list_path)
+    _verify_created_site(logged_in_admin.page, sites_list_url)
 
 
 ## YH-UI-SC-004: Create site with pdf
@@ -99,8 +99,8 @@ def test_create_site_from_archive(
 def test_create_site_from_pdf(
     logged_in_admin: DashboardPage,
     ensure_site_creation_available: None,
-    site_create_path: str,
-    sites_list_path: str,
+    site_create_url: str,
+    sites_list_url: str,
 ) -> None:
     pdf_file_path = _get_required_test_file(
         "sample.pdf",
@@ -109,14 +109,14 @@ def test_create_site_from_pdf(
 
     site_create_page = SiteCreatePage(logged_in_admin.page)
     with allure.step("Open the site creation page"):
-        site_create_page.navigate(site_create_path)
+        site_create_page.navigate(site_create_url)
 
     with allure.step("Create a site from a PDF file"):
         site_create_page.create_via_upload_file(str(pdf_file_path))
 
     _verify_created_site(
         logged_in_admin.page,
-        sites_list_path,
+        sites_list_url,
         accessibility_assertion=_assert_generated_pdf_site_available,
     )
 
@@ -128,8 +128,8 @@ def test_create_site_from_pdf(
 def test_create_site_from_folder_drag_and_drop(
     logged_in_admin: DashboardPage,
     ensure_site_creation_available: None,
-    site_create_path: str,
-    sites_list_path: str,
+    site_create_url: str,
+    sites_list_url: str,
 ) -> None:
     folder_path = _get_required_test_directory(
         "simple_html_css",
@@ -138,12 +138,12 @@ def test_create_site_from_folder_drag_and_drop(
 
     site_create_page = SiteCreatePage(logged_in_admin.page)
     with allure.step("Open the site creation page"):
-        site_create_page.navigate(site_create_path)
+        site_create_page.navigate(site_create_url)
 
     with allure.step("Create a site from a folder via drag and drop upload"):
         site_create_page.create_via_upload_folder(str(folder_path))
 
-    _verify_created_site(logged_in_admin.page, sites_list_path)
+    _verify_created_site(logged_in_admin.page, sites_list_url)
 
 
 ## YH-UI-SC-007: Create site by code editor
@@ -153,17 +153,17 @@ def test_create_site_from_folder_drag_and_drop(
 def test_create_site_from_code_editor(
     logged_in_admin: DashboardPage,
     ensure_site_creation_available: None,
-    site_create_path: str,
-    sites_list_path: str,
+    site_create_url: str,
+    sites_list_url: str,
 ) -> None:
     site_create_page = SiteCreatePage(logged_in_admin.page)
     with allure.step("Open the site creation page"):
-        site_create_page.navigate(site_create_path)
+        site_create_page.navigate(site_create_url)
 
     with allure.step("Create a site from the default code editor project"):
         site_create_page.create_via_editor()
 
-    _verify_created_site(logged_in_admin.page, sites_list_path)
+    _verify_created_site(logged_in_admin.page, sites_list_url)
 
 
 
@@ -192,14 +192,14 @@ def _assert_generated_pdf_site_available(popup: Page) -> None:
 
 def _verify_created_site(
     page: Page,
-    sites_list_path: str,
+    sites_list_url: str,
     expected_domain: Optional[str] = None,
     accessibility_assertion: Callable[[Page], None] = _assert_generated_site_available,
 ) -> None:
     sites_page = SitesPage(page)
 
     with allure.step("Verify the new site appears in the sites list"):
-        sites_page.assert_sites_list_page_opened(sites_list_path)
+        sites_page.assert_sites_list_page_opened(sites_list_url)
         sites_page.assert_first_site_status_created()
 
     with allure.step("Verify the generated site becomes active"):

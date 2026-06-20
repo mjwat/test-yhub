@@ -14,11 +14,6 @@ def dashboard_path(env_config: Dict[str, str]) -> str:
 
 
 @pytest.fixture(scope="session")
-def dashboard_deploy_path(dashboard_path: str) -> str:
-    return f"{dashboard_path}#deploy"
-
-
-@pytest.fixture(scope="session")
 def site_create_path(env_config: Dict[str, str]) -> str:
     configured = env_config["SITE_CREATE_PATH"]
     return configured if configured.startswith("/admin") else f"/admin{configured}"

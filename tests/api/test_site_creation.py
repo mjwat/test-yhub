@@ -11,22 +11,25 @@ from utils.url import url_contains_expected
 @allure.title("Authenticated user can open the site creation page")
 def test_site_creation_page_available_for_authenticated_user(
     admin_base_url: str,
-    dashboard_deploy_path: str,
+    site_create_path: str,
     site_client: SiteClient,
     ensure_site_creation_available: None,
 ) -> None:
-    response = site_client.get_site_creation_page()
-    expected_url = build_url(admin_base_url, dashboard_deploy_path)
+    with allure.step("Open the site creation page as an authenticated user"):
+        response = site_client.get_site_creation_page()
 
-    assert response.status_code == 200, (
-        f"Expected status code 200 for site creation page, got {response.status_code}. "
-        f"Final URL: {response.url}. Body: {response.text[:500]}"
-    )
+    with allure.step("Verify the site creation page opens at the expected URL"):
+        expected_url = build_url(admin_base_url, site_create_path)
 
-    assert response.url == expected_url, (
-        "Expected final URL to point to the dashboard deploy view. "
-        f"Expected URL: {expected_url}. Final URL: {response.url}"
-    )
+        assert response.status_code == 200, (
+            f"Expected status code 200 for site creation page, got {response.status_code}. "
+            f"Final URL: {response.url}. Body: {response.text[:500]}"
+        )
+
+        assert response.url == expected_url, (
+            "Expected final URL to point to the site creation page. "
+            f"Expected URL: {expected_url}. Final URL: {response.url}"
+        )
 
 
 # YH-API-SC-002: Create site from Git repository URL

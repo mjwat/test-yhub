@@ -6,7 +6,15 @@ from playwright.sync_api import Locator, Page
 class Navigation:
     def __init__(self, page: Page) -> None:
         self.page = page
-        self.dashboard_link: Locator = page.get_by_role("link", name=re.compile("dashboard", re.IGNORECASE))
-        self.sites_link: Locator = page.get_by_role("link", name=re.compile("sites", re.IGNORECASE))
-        self.links_link: Locator = page.get_by_role("link", name=re.compile("links", re.IGNORECASE))
-        self.logout_link: Locator = page.get_by_role("link", name=re.compile("logout", re.IGNORECASE))
+        
+        #RU
+        self.dashboard_link: Locator = page.get_by_role("link", name=re.compile("панель", re.IGNORECASE))
+        self.sites_link: Locator = page.get_by_role("link", name=re.compile("проекты", re.IGNORECASE))
+        self.links_link: Locator = page.get_by_role("link", name=re.compile("ссылки", re.IGNORECASE))
+        self.logout_link: Locator = page.get_by_role("link", name=re.compile("выйти", re.IGNORECASE))
+        
+        #EN
+        self.dashboard_link_en: Locator = page.get_by_role("link", name=re.compile("dashboard", re.IGNORECASE))
+        self.sites_link_en: Locator = page.get_by_role("link", name=re.compile("sites", re.IGNORECASE))
+        self.links_link_en: Locator = page.get_by_role("link", name=re.compile("links", re.IGNORECASE))
+        self.logout_link_en: Locator = page.get_by_role("link", name=re.compile("log out", re.IGNORECASE))

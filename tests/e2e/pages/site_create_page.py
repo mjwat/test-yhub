@@ -13,7 +13,7 @@ class SiteCreatePage(AdminBasePage):
             name=re.compile(r"github", re.IGNORECASE)).first
         self.editor_button: Locator = page.get_by_role(
             "button",
-            name=re.compile(r"editor", re.IGNORECASE),
+            name=re.compile(r" Онлайн-редактор", re.IGNORECASE),
         ).first
         self.git_repo_input: Locator = page.get_by_placeholder(re.compile("github", re.IGNORECASE)).first
         self.custom_domain_input: Locator = page.get_by_placeholder("my-awesome-project").first

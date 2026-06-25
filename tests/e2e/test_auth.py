@@ -25,9 +25,15 @@ def test_successful_login (
     dashboard_page = DashboardPage(page)
     expect(page).to_have_url(re.compile(dashboard_path))
 
-    is_dashboard_link_visible = dashboard_page.navigation.dashboard_link.first.is_visible()
+    # is_dashboard_link_visible = dashboard_page.navigation.dashboard_link.first.is_visible()
+    is_project_link_visible = dashboard_page.navigation.sites_link.first.is_visible()
 
-    assert is_dashboard_link_visible, (
-        "Expected logged-in UI indicator to be visible after login. "
-        "Dashboard link is not visible."
+    # assert is_dashboard_link_visible, (
+    #     "Expected logged-in UI indicator to be visible after login. "
+    #     "Dashboard link is not visible."
+    # )
+
+    assert is_project_link_visible, (
+        "Expected projects link to be visible after login. "
+        "Project link is not visible."
     )
